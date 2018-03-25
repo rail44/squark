@@ -1,0 +1,10 @@
+[package]
+name = "todomvc"
+version = "0.1.0"
+authors = ["Satoshi Amemiya <satoshi_amemiya@voyagegroup.com>"]
+
+[dependencies]
+squark-stdweb = { "path" = "../../" }
+squark = { "path" = "../../../squark" }
+stdweb = "0.4.2"
+serde_json = "1.0.13"

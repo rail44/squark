@@ -1,0 +1,9 @@
+[package]
+name = "squark"
+version = "0.1.0"
+authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
+
+[dependencies]
+uuid = "0.6.2"
+rand = { git = "https://github.com/rust-lang-nursery/rand.git" }
+serde_json = "1.0.13"
