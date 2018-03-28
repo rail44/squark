@@ -1,3 +1,5 @@
+[![crates.io](https://img.shields.io/crates/v/squark.svg)](https://crates.io/crates/squark)
+
 # squark
 
 Virtual DOM implemention and application definition inspired from [HyperApp](https://github.com/hyperapp/hyperapp/).
