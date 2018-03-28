@@ -4,8 +4,8 @@ version = "0.1.0"
 authors = ["Satoshi Amemiya <satoshi_amemiya@voyagegroup.com>"]
 
 [dependencies]
-squark = { "path" = "../../../squark" }
-squark-macros = { "path" = "../../../squark-macros" }
-squark-stdweb = { "path" = "../../" }
+squark = { "path" = "../../squark" }
+squark-macros = { "path" = "../../squark-macros" }
+squark-stdweb = { "path" = "../../squark-stdweb" }
 stdweb = "0.4.2"
 serde_json = "1.0.13"

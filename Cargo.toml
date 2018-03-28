@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "squark",
+    "squark-macros",
+    "squark-stdweb",
+    "examples/todomvc",
+]
