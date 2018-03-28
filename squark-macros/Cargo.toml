@@ -1,0 +1,12 @@
+[package]
+name = "squark-macros"
+version = "0.1.0"
+authors = ["Satoshi Amemiya <satoshi_amemiya@voyagegroup.com>"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+pest = "1.0.6"
+pest_derive = "1.0.6"
+squark = { path = "../squark" }

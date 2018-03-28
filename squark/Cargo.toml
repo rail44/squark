@@ -5,5 +5,5 @@ authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
 
 [dependencies]
 uuid = "0.6.2"
-rand = { git = "https://github.com/rust-lang-nursery/rand.git" }
+rand = { git = "https://github.com/rust-lang-nursery/rand.git", features = ["stdweb"] }
 serde_json = "1.0.13"

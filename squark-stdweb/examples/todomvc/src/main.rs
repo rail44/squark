@@ -1,5 +1,8 @@
+#![feature(proc_macro)]
+
 extern crate serde_json;
 extern crate squark;
+extern crate squark_macros;
 extern crate squark_stdweb;
 extern crate stdweb;
 
@@ -7,8 +10,9 @@ use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{h, handler, null, text, App, HandlerArg, View};
+use squark::{handler, text, null, App, HandlerArg, View, view, bool, string};
 use squark_stdweb::Runtime;
+use squark_macros::view;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
 enum Visibility {
@@ -35,26 +39,13 @@ impl Visibility {
         } else {
             "".to_string()
         };
-        h(
-            "li".to_string(),
-            vec![],
-            vec![],
-            vec![
-                h(
-                    "a".to_string(),
-                    vec![
-                        ("class".to_string(), class),
-                        ("style".to_string(), "cursor: pointer".to_string()),
-                    ],
-                    vec![
-                        handler("click".to_string(), self, move |_| {
-                            Some(Action::ChangeVisibility(this.clone()))
-                        }),
-                    ],
-                    vec![text(self.to_string())],
-                ),
-            ],
-        )
+        view! {
+            <li>
+                <a class={ string(class) } style="cursor: pointer" onclick={ handler(self, move |_| { Some(Action::ChangeVisibility(this.clone())) }) }>
+                    { text(self.to_string()) }
+                </a>
+            </li>
+        }
     }
 }
 
@@ -82,99 +73,61 @@ impl Entry {
 
     pub fn view(&self, i: usize, editing: bool) -> View<Action> {
         let completed = self.completed.clone();
-        let mut class = String::new();
+        let mut class = vec![];
         if completed {
-            class += "completed";
+            class.push("completed");
         }
         if editing {
-            class += "editing";
-        }
-        let mut toggle_attributes = vec![
-            ("class".to_string(), "toggle".to_string()),
-            ("type".to_string(), "checkbox".to_string()),
-        ];
-        if completed {
-            toggle_attributes.push(("checked".to_string(), "true".to_string()));
+            class.push("editing");
         }
 
-        h(
-            "li".to_string(),
-            vec![("class".to_string(), class)],
-            vec![],
-            vec![
-                if editing {
-                    let id = format!("edit-{}", i);
-                    h(
-                        "input".to_string(),
-                        vec![
-                            ("id".to_string(), id.clone()),
-                            ("class".to_string(), "edit".to_string()),
-                            ("type".to_string(), "text".to_string()),
-                            ("value".to_string(), self.description.clone()),
-                        ],
-                        vec![
-                            handler("input".to_string(), (), |v| match v {
-                                HandlerArg::String(v) => Some(Action::UpdateEntry(v)),
-                                _ => None,
-                            }),
-                            handler("keydown".to_string(), (), |v| match v {
-                                HandlerArg::String(ref v) if v.as_str() == "Enter" => {
-                                    Some(Action::EndEditing)
-                                }
-                                _ => None,
-                            }),
-                            handler("blur".to_string(), (), move |_| Some(Action::EndEditing)),
-                            handler("render".to_string(), (), move |_| {
-                                InputElement::try_from(
-                                    document().get_element_by_id(id.as_str()).unwrap(),
-                                ).unwrap()
-                                    .focus();
-                                None
-                            }),
-                        ],
-                        vec![],
-                    )
-                } else {
-                    h(
-                        "div".to_string(),
-                        vec![("class".to_string(), "view".to_string())],
-                        vec![],
-                        vec![
-                            h(
-                                "input".to_string(),
-                                toggle_attributes,
-                                vec![
-                                    handler("click".to_string(), (i, completed), move |_| {
-                                        Some(Action::Check(i, !completed))
-                                    }),
-                                ],
-                                vec![],
-                            ),
-                            h(
-                                "label".to_string(),
-                                vec![],
-                                vec![
-                                    handler("dblclick".to_string(), i, move |_| {
-                                        Some(Action::EditEntry(i))
-                                    }),
-                                ],
-                                vec![text(self.description.clone())],
-                            ),
-                            h(
-                                "button".to_string(),
-                                vec![("class".to_string(), "destroy".to_string())],
-                                vec![
-                                    handler("click".to_string(), i, move |_| {
-                                        Some(Action::Remove(i))
-                                    }),
-                                ],
-                                vec![],
-                            ),
-                        ],
-                    )
-                },
-            ],
-        )
+        view! {
+            <li class={ string(class.join(" ")) }>
+                {
+                    if editing {
+                        let id = format!("edit-{}", i);
+                        view! {
+                            <input
+                                id={ string(id.clone()) }
+                                class="edit"
+                                type="text"
+                                value={ string(self.description.clone()) }
+                                oninput={ handler((), |v| match v {
+                                    HandlerArg::String(v) => Some(Action::UpdateEntry(v)),
+                                    _ => None,
+                                }) }
+                                onkeydown={ handler((), |v| match v {
+                                    HandlerArg::String(ref v) if v.as_str() == "Enter" => {
+                                        Some(Action::EndEditing)
+                                    }
+                                    _ => None,
+                                }) }
+                                onblur={ handler((), move |_| Some(Action::EndEditing)) }
+                                onrender={ handler((), move |_| {
+                                    InputElement::try_from(
+                                        document().get_element_by_id(id.as_str()).unwrap()
+                                    ).unwrap().focus();
+                                    None
+                                }) } />
+                        }
+                    } else {
+                        view! {
+                            <div class="view">
+                                <input
+                                    class="toggle"
+                                    type="checkbox"
+                                    checked={ bool(completed) }
+                                    onclick={ handler((i, completed), move |_| { Some(Action::Check(i, !completed)) }) }/>
+                                <label ondblclick={ handler(i, move |_| { Some(Action::EditEntry(i)) }) }>
+                                    { text(self.description.clone()) }
+                                </label>
+                                <button class="destroy" onclick={ handler(i, move |_| { Some(Action::Remove(i)) }) } />
+                            </div>
+                        }
+                    }
+                }
+            </li>
+        }
     }
 }
 
@@ -228,148 +181,114 @@ enum Action {
 }
 
 fn header_view(state: &State) -> View<Action> {
-    h(
-        "header".to_string(),
-        vec![("class".to_string(), "header".to_string())],
-        vec![],
-        vec![
-            h(
-                "h1".to_string(),
-                vec![],
-                vec![],
-                vec![text("todos".to_string())],
-            ),
-            h(
-                "input".to_string(),
-                vec![
-                    ("class".to_string(), "new-todo".to_string()),
-                    (
-                        "placeholder".to_string(),
-                        "What needs to be done?".to_string(),
-                    ),
-                    ("value".to_string(), state.field.clone()),
-                ],
-                vec![
-                    handler("input".to_string(), (), |v| match v {
-                        HandlerArg::String(v) => Some(Action::UpdateField(v)),
-                        _ => None,
-                    }),
-                    handler("keydown".to_string(), (), |v| match v {
-                        HandlerArg::String(ref v) if v.as_str() == "Enter" => Some(Action::Add),
-                        _ => None,
-                    }),
-                ],
-                vec![],
-            ),
-        ],
-    )
+    view! {
+        <header class="header">
+            <h1>todos</h1>
+            <input
+                class="new-todo"
+                placeholder="What needs to be done?"
+                value={ string(state.field.clone()) }
+                oninput={ handler((), |v| match v {
+                    HandlerArg::String(v) => Some(Action::UpdateField(v)),
+                    _ => None,
+                }) }
+                onkeydown={ handler((), |v| match v {
+                    HandlerArg::String(ref v) if v.as_str() == "Enter" => Some(Action::Add),
+                    _ => None,
+                }) } />
+        </header>
+    }
 }
 
 fn main_view(state: &State) -> View<Action> {
     let is_all_completed = state.is_all_completed();
-    h(
-        "section".to_string(),
-        vec![("class".to_string(), "main".to_string())],
-        vec![],
-        vec![
-            if state.entries.len() > 0 {
-                let mut attributes = vec![
-                    ("class".to_string(), "toggle-all".to_string()),
-                    ("type".to_string(), "checkbox".to_string()),
-                ];
-                if is_all_completed {
-                    attributes.push(("checked".to_string(), "true".to_string()));
+    view! {
+        <section class="main">
+            {
+                if state.entries.len() > 0 {
+                    let mut attributes = vec![
+                        ("class".to_string(), "toggle-all".to_string()),
+                        ("type".to_string(), "checkbox".to_string()),
+                    ];
+                    if is_all_completed {
+                        attributes.push(("checked".to_string(), "true".to_string()));
+                    }
+                    view! {
+                        <span>
+                            <input
+                                class="toggle-all"
+                                type="checkbox"
+                                checked={ bool(is_all_completed) }
+                                onclick={ handler(is_all_completed, move |_| { Some(Action::CheckAll(!is_all_completed)) }) } />
+                        </span>
+                    }
+                } else {
+                    null()
                 }
-                h(
-                    "span".to_string(),
-                    vec![],
-                    vec![],
+
+            }
+            {
+                view(
+                    "ul".to_string(),
                     vec![
-                        h(
-                            "input".to_string(),
-                            attributes,
-                            vec![
-                                handler("click".to_string(), is_all_completed, move |_| {
-                                    Some(Action::CheckAll(!is_all_completed))
-                                }),
-                            ],
-                            vec![],
-                        ),
+                        ("class".to_string(), string("todo-list".to_string())),
+                        ("type".to_string(), string("checkbox".to_string())),
                     ],
+                    vec![],
+                    state
+                        .entries
+                        .iter()
+                        .enumerate()
+                        .filter(|&(_, e)| e.should_display(&state.visibility))
+                        .map(|(i, e)| {
+                            let is_editing = state.editing.as_ref().map_or(false, |at| &i == at);
+                            e.view(i, is_editing)
+                        })
+                        .collect()
                 )
-            } else {
-                null()
-            },
-            h(
-                "ul".to_string(),
-                vec![
-                    ("class".to_string(), "todo-list".to_string()),
-                    ("type".to_string(), "checkbox".to_string()),
-                ],
-                vec![],
-                state
-                    .entries
-                    .iter()
-                    .enumerate()
-                    .filter(|&(_, e)| e.should_display(&state.visibility))
-                    .map(|(i, e)| {
-                        let is_editing = state.editing.as_ref().map_or(false, |at| &i == at);
-                        e.view(i, is_editing)
-                    })
-                    .collect(),
-            ),
-        ],
-    )
+            }
+        </section>
+    }
 }
 
 fn footer_view(state: &State) -> View<Action> {
     if state.entries.is_empty() {
         return null();
     }
-    h(
-        "footer".to_string(),
-        vec![("class".to_string(), "footer".to_string())],
-        vec![],
-        vec![
-            h(
-                "span".to_string(),
-                vec![("class".to_string(), "todo-count".to_string())],
-                vec![],
-                vec![
-                    h(
-                        "strong".to_string(),
-                        vec![],
-                        vec![],
-                        vec![text(state.not_completed_count().to_string())],
-                    ),
-                    text(" item(s) left".to_string()),
-                ],
-            ),
-            h(
-                "ul".to_string(),
-                vec![("class".to_string(), "filters".to_string())],
-                vec![],
-                vec![Visibility::All, Visibility::Active, Visibility::Completed]
-                    .into_iter()
-                    .map(|v| v.view(v == state.visibility))
-                    .collect(),
-            ),
-            if state.has_completed() {
-                h(
-                    "button".to_string(),
-                    vec![("class".to_string(), "clear-completed".to_string())],
+    view! {
+        <footer class="footer">
+            <span class="todo-count">
+                <strong>
+                    { text(state.not_completed_count().to_string()) }
+                </strong>
+                item(s) left
+            </span>
+            {
+                view(
+                    "ul".to_string(),
                     vec![
-                        handler("click".to_string(), (), move |_| {
-                            Some(Action::RemoveComplete)
-                        }),
+                        ("class".to_string(), string("filters".to_string())),
                     ],
-                    vec![text("Clear completed".to_string())],
+                    vec![],
+                    vec![Visibility::All, Visibility::Active, Visibility::Completed]
+                        .into_iter()
+                        .map(|v| v.view(v == state.visibility))
+                        .collect()
                 )
-            } else {
-                null()
-            },
-        ],
-    )
+            }
+            {
+                if state.has_completed() {
+                    view! {
+                        <button class="clear-completed" onclick={ handler((), move |_| { Some(Action::RemoveComplete) }) }>
+                            Clear completed
+                        </button>
+                    }
+                } else {
+                    null()
+                }
+            }
+        </footer>
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -392,9 +311,10 @@ impl App for TodoApp {
             }
             Action::EndEditing => {
                 if let Some(i) = state.editing {
-                    if state.entries[i].description.as_str() != "" {
-                        state.editing = None;
+                    if state.entries[i].description.as_str() == "" {
+                        state.entries.remove(i);
                     }
+                    state.editing = None;
                 }
             }
             Action::UpdateEntry(s) => {
@@ -426,12 +346,13 @@ impl App for TodoApp {
     }
 
     fn view(state: State) -> View<Action> {
-        h(
-            "div".to_string(),
-            vec![],
-            vec![],
-            vec![header_view(&state), main_view(&state), footer_view(&state)],
-        )
+        view! {
+            <div>
+                { header_view(&state) }
+                { main_view(&state) }
+                { footer_view(&state) }
+            </div>
+        }
     }
 }
 

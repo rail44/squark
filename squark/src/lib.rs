@@ -11,12 +11,12 @@ use rand::{OsRng, RngCore};
 use uuid::Uuid;
 pub use serde_json::Value as HandlerArg;
 
-pub type Attributes = Vec<(String, String)>;
+pub type Attributes = Vec<(String, AttributeValue)>;
 
 fn diff_attributes(a: &mut Attributes, b: &Attributes) -> Vec<Diff> {
     let mut result = vec![];
 
-    let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
+    let mut old_map = HashMap::<String, AttributeValue>::from_iter(a.drain(..));
     for &(ref new_key, ref new_val) in b {
         match old_map.remove(new_key) {
             Some(old_val) => {
@@ -153,7 +153,7 @@ impl Element {
 
 #[derive(Debug)]
 pub enum Diff {
-    SetAttribute(String, String),
+    SetAttribute(String, AttributeValue),
     RemoveAttribute(String),
     AddChild(usize, Node),
     ReplaceChild(usize, Node),
@@ -161,6 +161,20 @@ pub enum Diff {
     PatchChild(usize, Vec<Diff>),
     SetHandler(String, String),
     RemoveHandler(String, String),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum AttributeValue {
+    String(String),
+    Bool(bool),
+}
+
+pub fn string(s: String) -> AttributeValue {
+    AttributeValue::String(s)
+}
+
+pub fn bool(b: bool) -> AttributeValue {
+    AttributeValue::Bool(b)
 }
 
 pub type HandlerMap<A> = HashMap<String, HandlerFunction<A>>;
@@ -176,17 +190,18 @@ pub trait App: 'static + Clone {
     fn view(state: Self::State) -> View<Self::Action>;
 }
 
-pub fn h<A>(
+pub fn view<A>(
     name: String,
     attributes: Attributes,
-    handlers: Vec<(Handler, HandlerFunction<A>)>,
+    handlers: Vec<(String, (u64, String, HandlerFunction<A>))>,
     children: Vec<View<A>>,
 ) -> View<A> {
     let mut map = HashMap::new();
     let handlers = handlers
         .into_iter()
-        .map(|(handler, f)| {
-            map.insert((handler.1).1.clone(), f);
+        .map(|(kind, (hash, id, f))| {
+            let handler = (kind, (hash, id.clone()));
+            map.insert(id, f);
             handler
         })
         .collect();
@@ -212,7 +227,7 @@ pub fn null<A>() -> View<A> {
     (Node::Null, HashMap::new())
 }
 
-pub fn handler<A, H, F>(kind: String, hash: H, f: F) -> (Handler, HandlerFunction<A>)
+pub fn handler<A, H, F>(hash: H, f: F) -> (u64, String, HandlerFunction<A>)
 where
     H: Hash,
     F: Fn(HandlerArg) -> Option<A> + 'static,
@@ -225,5 +240,5 @@ where
 
     let id = Uuid::from_random_bytes(bytes).to_string();
 
-    ((kind, (hasher.finish(), id)), Box::new(f))
+    (hasher.finish(), id, Box::new(f))
 }

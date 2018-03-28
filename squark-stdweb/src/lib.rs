@@ -9,7 +9,7 @@ use std::rc::Rc;
 use std::cell::{Cell, RefCell};
 use std::collections::Bound::{Excluded, Included};
 
-use squark::{App, Diff, Element, HandlerArg, HandlerMap, Node};
+use squark::{App, Diff, Element, HandlerArg, HandlerMap, Node, AttributeValue};
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web;
@@ -87,6 +87,19 @@ fn replace_at<N: INode>(parent: &web::Element, i: usize, node: N) {
     parent.replace_child(&node, &current).unwrap();
 }
 
+fn set_attribute(el: &web::Element, name: &str, value: &AttributeValue) {
+    match value {
+        &AttributeValue::Bool(ref b) => {
+            js! { @{el.clone()}[@{name}] = @{b} };
+            el.set_attribute(name, b.to_string().as_str()).unwrap();
+        },
+        &AttributeValue::String(ref s) => {
+            js! { @{el.clone()}[@{name}] = @{s} };
+            el.set_attribute(name, s).unwrap();
+        },
+    }
+}
+
 impl<A: App> Runtime<A> {
     pub fn new(root: web::Element, state: A::State) -> Runtime<A> {
         Runtime {
@@ -139,10 +152,7 @@ impl<A: App> Runtime<A> {
                 pos.pop();
             }
             Diff::ReplaceChild(i, node) => self.replace_child(el, i, node, pos),
-            Diff::SetAttribute(name, value) => {
-                js! { @{el}[@{name.clone()}] = @{value.clone()} };
-                el.set_attribute(&name, &value).unwrap();
-            }
+            Diff::SetAttribute(name, value) => set_attribute(el, &name, &value),
             Diff::RemoveAttribute(name) => {
                 js! { @{el}[@{name.clone()}] = undefined };
                 el.remove_attribute(&name);
@@ -165,8 +175,7 @@ impl<A: App> Runtime<A> {
         let web_el = document().create_element(el.name.as_str()).unwrap();
 
         for &(ref name, ref value) in el.attributes.iter() {
-            js! { @{web_el.clone()}[@{name}] = @{value} };
-            web_el.set_attribute(name, value).unwrap();
+            set_attribute(&web_el, name, value);
         }
 
         for &(ref name, (_, ref id)) in el.handlers.iter() {
