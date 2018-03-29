@@ -1,7 +1,14 @@
 [package]
 name = "squark-macros"
 version = "0.1.0"
-authors = ["Satoshi Amemiya <satoshi_amemiya@voyagegroup.com>"]
+authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
+repository = "https://github.com/rail44/squark"
+homepage = "https://github.com/rail44/squark"
+license = "WTFPL"
+readme = "README.md"
+keywords = ["web", "asmjs", "webasm", "javascript"]
+categories = ["gui", "web-programming"]
+description = "Macros like JSX to help building Squark application"
 
 [lib]
 proc-macro = true
@@ -9,4 +16,4 @@ proc-macro = true
 [dependencies]
 pest = "1.0.6"
 pest_derive = "1.0.6"
-squark = { path = "../squark" }
+squark = { path = "../squark", version = "0.1.1" }
