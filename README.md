@@ -41,20 +41,18 @@ extern crate stdweb;
 
 use stdweb::traits::*;
 use stdweb::web::document;
-use squark::{handler, text, App, View};
-use squark_stdweb::Runtime;
+use squark::{handler, App, View, Runtime};
+use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct State {
     count: isize,
 }
 
 impl State {
     pub fn new() -> State {
-        State {
-            count: 0,
-        }
+        State { count: 0 }
     }
 }
 
@@ -74,10 +72,10 @@ impl App for CounterApp {
         match action {
             Action::Increment => {
                 state.count += 1;
-            },
+            }
             Action::Decrement => {
                 state.count -= 1;
-            },
+            }
         };
         state
     }
@@ -85,7 +83,7 @@ impl App for CounterApp {
     fn view(state: State) -> View<Action> {
         view! {
             <div>
-                { text(state.count.to_string()) }
+                { state.count.to_string() }
                 <button onclick={ handler((), |_| Some(Action::Increment)) }>
                     increment
                 </button>
@@ -99,10 +97,10 @@ impl App for CounterApp {
 
 fn main() {
     stdweb::initialize();
-    Runtime::<CounterApp>::new(
+    StdwebRuntime::<CounterApp>::new(
         document().query_selector("body").unwrap().unwrap(),
         State::new(),
-    ).start();
+    ).run();
     stdweb::event_loop();
 }
 ```
