@@ -7,11 +7,11 @@ extern crate stdweb;
 
 use stdweb::traits::*;
 use stdweb::web::document;
-use squark::{handler, App, View};
-use squark_stdweb::Runtime;
+use squark::{handler, App, Runtime, View};
+use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct State {
     count: isize,
 }
@@ -63,9 +63,9 @@ impl App for CounterApp {
 
 fn main() {
     stdweb::initialize();
-    Runtime::<CounterApp>::new(
+    StdwebRuntime::<CounterApp>::new(
         document().query_selector("body").unwrap().unwrap(),
         State::new(),
-    ).start();
+    ).run();
     stdweb::event_loop();
 }

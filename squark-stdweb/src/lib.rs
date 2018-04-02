@@ -6,10 +6,10 @@ extern crate stdweb;
 
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::collections::Bound::{Excluded, Included};
 
-use squark::{App, AttributeValue, Diff, Element, HandlerArg, HandlerMap, Node};
+use squark::{App, AttributeValue, Diff, Element, Env, HandlerArg, Node, Runtime};
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web;
@@ -62,12 +62,9 @@ impl ToHandlerArg for ChangeEvent {
 }
 
 #[derive(Clone)]
-pub struct Runtime<A: App> {
-    state: Rc<RefCell<A::State>>,
-    node: Rc<RefCell<Node>>,
-    handler_map: Rc<RefCell<HandlerMap<A::Action>>>,
+pub struct StdwebRuntime<A: App> {
+    env: Env<A>,
     attached_map: Rc<RefCell<AttachedMadp>>,
-    scheduled: Rc<Cell<bool>>,
     root: web::Element,
 }
 
@@ -100,46 +97,16 @@ fn set_attribute(el: &web::Element, name: &str, value: &AttributeValue) {
     }
 }
 
-impl<A: App> Runtime<A> {
-    pub fn new(root: web::Element, state: A::State) -> Runtime<A> {
-        Runtime {
-            state: Rc::new(RefCell::new(state)),
-            node: Rc::new(RefCell::new(Node::Null)),
-            handler_map: Rc::new(RefCell::new(HashMap::new())),
+impl<A: App> StdwebRuntime<A> {
+    pub fn new(root: web::Element, state: A::State) -> StdwebRuntime<A> {
+        StdwebRuntime {
+            env: Env::new(state),
             attached_map: Rc::new(RefCell::new(BTreeMap::new())),
-            scheduled: Rc::new(Cell::new(false)),
             root,
         }
     }
 
-    pub fn start(&self) {
-        let (mut old, new) = {
-            let mut node = self.node.borrow_mut();
-            let old = node.clone();
-            let view = A::view(self.state.borrow().clone());
-            *node = view.node.clone();
-            *self.handler_map.borrow_mut() = view.handler_map;
-            (old, view.node)
-        };
-        if let Some(diff) = Node::diff(&mut old, &new, &mut 0) {
-            let root = self.root.clone();
-            self.handle_diff(&root, diff, &mut vec![]);
-        }
-    }
-
-    fn schedule_render(&self) {
-        if self.scheduled.get() {
-            return;
-        }
-        let this = self.clone();
-        window().request_animation_frame(move |_| {
-            this.scheduled.set(false);
-            this.start();
-        });
-        self.scheduled.set(false);
-    }
-
-    fn handle_diff(&self, el: &web::Element, diff: Diff, pos: &mut Position) {
+    fn handle_diff_inner(&self, el: &web::Element, diff: Diff, pos: &mut Position) {
         match diff {
             Diff::AddChild(i, node) => self.add_child(el, i, node, pos),
             Diff::PatchChild(i, diffs) => {
@@ -147,7 +114,7 @@ impl<A: App> Runtime<A> {
                     web::Element::try_from(el.child_nodes().iter().nth(i).unwrap()).unwrap();
                 pos.push(i);
                 for diff in diffs {
-                    self.handle_diff(&child, diff, pos);
+                    self.handle_diff_inner(&child, diff, pos);
                 }
                 pos.pop();
             }
@@ -265,24 +232,10 @@ impl<A: App> Runtime<A> {
             "input" => self._set_handler::<InputEvent>(&el, id),
             "keydown" => self._set_handler::<KeyDownEvent>(&el, id),
             "render" => {
-                let handler = self.handler_map.borrow_mut().remove(id).unwrap();
                 let this = self.clone();
+                let cloned_id = id.to_string();
                 window().request_animation_frame(move |_| {
-                    let is_updated = {
-                        let mut state = this.state.borrow_mut();
-                        match handler(json!{null}) {
-                            Some(action) => {
-                                *state = A::reducer(state.clone(), action);
-                                true
-                            }
-                            None => false,
-                        }
-                    };
-                    if is_updated {
-                        this.schedule_render();
-                    }
-                    this.scheduled.set(false);
-                    this.start();
+                    this.call_handler(&cloned_id, json!{null});
                 });
                 return;
             }
@@ -305,25 +258,30 @@ impl<A: App> Runtime<A> {
         el: &web::Element,
         id: &str,
     ) -> EventListenerHandle {
-        let handler = self.handler_map.borrow_mut().remove(id).unwrap();
-        let el = el.clone();
         let this = self.clone();
+        let cloned_id = id.to_string();
         el.clone().add_event_listener(move |e: E| {
             e.stop_propagation();
-            let is_updated = {
-                let mut state = this.state.borrow_mut();
-                match handler(e.to_handler_arg()) {
-                    Some(action) => {
-                        *state = A::reducer(state.clone(), action);
-                        true
-                    }
-                    None => false,
-                }
-            };
-            if is_updated {
-                this.schedule_render();
-                e.prevent_default();
-            }
+            let arg = e.to_handler_arg();
+            this.call_handler(&cloned_id, arg);
+            e.prevent_default();
         })
+    }
+}
+
+impl<A: App> Runtime<A> for StdwebRuntime<A> {
+    fn get_env<'a>(&'a self) -> &'a Env<A> {
+        &self.env
+    }
+
+    fn schedule_render(&self) {
+        let this = self.clone();
+        window().request_animation_frame(move |_| {
+            this.run();
+        });
+    }
+
+    fn handle_diff(&self, diff: Diff) {
+        self.handle_diff_inner(&self.root, diff, &mut vec![]);
     }
 }
