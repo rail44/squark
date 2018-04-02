@@ -14,7 +14,7 @@ use uuid::Uuid;
 
 pub use serde_json::Value as HandlerArg;
 
-pub type Attributes = Vec<(String, AttributeValue)>;
+type Attributes = Vec<(String, AttributeValue)>;
 
 fn diff_attributes(a: &mut Attributes, b: &Attributes) -> Vec<Diff> {
     let mut result = vec![];
@@ -72,7 +72,7 @@ pub enum Node {
 }
 
 impl Node {
-    pub fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Option<Diff> {
+    fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Option<Diff> {
         match (a, b) {
             (&mut Node::Element(ref mut a), &Node::Element(ref b)) => Element::diff(a, b, &i),
             (&mut Node::Text(ref mut text_a), &Node::Text(ref text_b)) => {
@@ -190,11 +190,11 @@ impl From<bool> for AttributeValue {
     }
 }
 
-pub type HandlerMap<A> = HashMap<String, HandlerFunction<A>>;
+type HandlerMap<A> = HashMap<String, HandlerFunction<A>>;
 
 pub struct View<A> {
-    pub node: Node,
-    pub handler_map: HandlerMap<A>,
+    node: Node,
+    handler_map: HandlerMap<A>,
 }
 
 impl<A> View<A> {
@@ -313,23 +313,23 @@ impl<A: App> Env<A> {
         }
     }
 
-    pub fn get_state(&self) -> A::State {
+    fn get_state(&self) -> A::State {
         self.state.borrow().clone()
     }
 
-    pub fn set_state(&self, state: A::State) {
+    fn set_state(&self, state: A::State) {
         *self.state.borrow_mut() = state;
     }
 
-    pub fn get_node(&self) -> Node {
+    fn get_node(&self) -> Node {
         self.node.borrow().clone()
     }
 
-    pub fn set_node(&self, node: Node) {
+    fn set_node(&self, node: Node) {
         *self.node.borrow_mut() = node;
     }
 
-    pub fn pop_handler(&self, id: &str) -> Option<HandlerFunction<A::Action>> {
+    fn pop_handler(&self, id: &str) -> Option<HandlerFunction<A::Action>> {
         self.handler_map.borrow_mut().remove(id)
     }
 }
