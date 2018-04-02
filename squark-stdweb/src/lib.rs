@@ -9,7 +9,7 @@ use std::rc::Rc;
 use std::cell::{Cell, RefCell};
 use std::collections::Bound::{Excluded, Included};
 
-use squark::{App, Diff, Element, HandlerArg, HandlerMap, Node, AttributeValue};
+use squark::{App, AttributeValue, Diff, Element, HandlerArg, HandlerMap, Node};
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web;
@@ -92,11 +92,11 @@ fn set_attribute(el: &web::Element, name: &str, value: &AttributeValue) {
         &AttributeValue::Bool(ref b) => {
             js! { @{el.clone()}[@{name}] = @{b} };
             el.set_attribute(name, b.to_string().as_str()).unwrap();
-        },
+        }
         &AttributeValue::String(ref s) => {
             js! { @{el.clone()}[@{name}] = @{s} };
             el.set_attribute(name, s).unwrap();
-        },
+        }
     }
 }
 
@@ -116,10 +116,10 @@ impl<A: App> Runtime<A> {
         let (mut old, new) = {
             let mut node = self.node.borrow_mut();
             let old = node.clone();
-            let (new, handler_map) = A::view(self.state.borrow().clone());
-            *node = new.clone();
-            *self.handler_map.borrow_mut() = handler_map;
-            (old, new)
+            let view = A::view(self.state.borrow().clone());
+            *node = view.node.clone();
+            *self.handler_map.borrow_mut() = view.handler_map;
+            (old, view.node)
         };
         if let Some(diff) = Node::diff(&mut old, &new, &mut 0) {
             let root = self.root.clone();
