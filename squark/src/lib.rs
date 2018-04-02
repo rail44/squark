@@ -169,17 +169,103 @@ pub enum AttributeValue {
     Bool(bool),
 }
 
-pub fn string(s: String) -> AttributeValue {
-    AttributeValue::String(s)
+impl From<String> for AttributeValue {
+    fn from(s: String) -> AttributeValue {
+        AttributeValue::String(s)
+    }
 }
 
-pub fn bool(b: bool) -> AttributeValue {
-    AttributeValue::Bool(b)
+impl<'a> From<&'a str> for AttributeValue {
+    fn from(s: &'a str) -> AttributeValue {
+        AttributeValue::String(s.to_string())
+    }
+}
+
+impl From<bool> for AttributeValue {
+    fn from(b: bool) -> AttributeValue {
+        AttributeValue::Bool(b)
+    }
 }
 
 pub type HandlerMap<A> = HashMap<String, HandlerFunction<A>>;
 
-pub type View<A> = (Node, HandlerMap<A>);
+pub struct View<A> {
+    pub node: Node,
+    pub handler_map: HandlerMap<A>,
+}
+
+impl<A> View<A> {
+    pub fn new(
+        name: String,
+        attributes: Attributes,
+        handlers: Vec<(String, (u64, String, HandlerFunction<A>))>,
+        children: Vec<View<A>>,
+    ) -> View<A> {
+        let mut handler_map = HashMap::new();
+        let handlers = handlers
+            .into_iter()
+            .map(|(kind, (hash, id, f))| {
+                let handler = (kind, (hash, id.clone()));
+                handler_map.insert(id, f);
+                handler
+            })
+            .collect();
+
+        let children = children
+            .into_iter()
+            .map(|child| {
+                handler_map.extend(child.handler_map);
+                child.node
+            })
+            .collect();
+
+        View {
+            node: Node::Element(Element::new(name, attributes, handlers, children)),
+            handler_map,
+        }
+    }
+
+    pub fn text(s: String) -> View<A> {
+        View {
+            node: Node::Text(s),
+            handler_map: HashMap::new(),
+        }
+    }
+
+    pub fn null() -> View<A> {
+        View {
+            node: Node::Null,
+            handler_map: HashMap::new(),
+        }
+    }
+}
+
+impl<A> From<()> for View<A> {
+    fn from(_: ()) -> View<A> {
+        View::null()
+    }
+}
+
+impl<A> From<String> for View<A> {
+    fn from(s: String) -> View<A> {
+        View::text(s)
+    }
+}
+
+impl<'a, A> From<&'a str> for View<A> {
+    fn from(s: &'a str) -> View<A> {
+        View::text(s.to_string())
+    }
+}
+
+impl<A, T> From<Option<T>> for View<A>
+where
+    T: Into<View<A>>,
+{
+    fn from(option: Option<T>) -> View<A> {
+        option.map_or_else(|| View::null(), |v| v.into())
+    }
+}
 
 pub trait App: 'static + Clone {
     type State: Clone + Debug + 'static;
@@ -188,43 +274,6 @@ pub trait App: 'static + Clone {
     fn reducer(state: Self::State, action: Self::Action) -> Self::State;
 
     fn view(state: Self::State) -> View<Self::Action>;
-}
-
-pub fn view<A>(
-    name: String,
-    attributes: Attributes,
-    handlers: Vec<(String, (u64, String, HandlerFunction<A>))>,
-    children: Vec<View<A>>,
-) -> View<A> {
-    let mut map = HashMap::new();
-    let handlers = handlers
-        .into_iter()
-        .map(|(kind, (hash, id, f))| {
-            let handler = (kind, (hash, id.clone()));
-            map.insert(id, f);
-            handler
-        })
-        .collect();
-
-    let children = children
-        .into_iter()
-        .map(|(node, child_map)| {
-            map.extend(child_map);
-            node
-        })
-        .collect();
-    (
-        Node::Element(Element::new(name, attributes, handlers, children)),
-        map,
-    )
-}
-
-pub fn text<A>(s: String) -> View<A> {
-    (Node::Text(s), HashMap::new())
-}
-
-pub fn null<A>() -> View<A> {
-    (Node::Null, HashMap::new())
 }
 
 pub fn handler<A, H, F>(hash: H, f: F) -> (u64, String, HandlerFunction<A>)
