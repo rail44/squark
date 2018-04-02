@@ -10,8 +10,8 @@ use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{handler, App, HandlerArg, View};
-use squark_stdweb::Runtime;
+use squark::{handler, App, HandlerArg, View, Runtime};
+use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
@@ -45,7 +45,7 @@ impl Visibility {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct Entry {
     description: String,
     completed: bool,
@@ -134,7 +134,7 @@ impl Entry {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct State {
     entries: Vec<Entry>,
     field: String,
@@ -358,9 +358,9 @@ impl App for TodoApp {
 
 fn main() {
     stdweb::initialize();
-    Runtime::<TodoApp>::new(
+    StdwebRuntime::<TodoApp>::new(
         document().query_selector("#container").unwrap().unwrap(),
         State::new(),
-    ).start();
+    ).run();
     stdweb::event_loop();
 }

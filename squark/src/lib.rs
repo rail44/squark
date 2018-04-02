@@ -7,8 +7,11 @@ use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
+use std::rc::Rc;
+use std::cell::{Cell, RefCell};
 use rand::{OsRng, RngCore};
 use uuid::Uuid;
+
 pub use serde_json::Value as HandlerArg;
 
 pub type Attributes = Vec<(String, AttributeValue)>;
@@ -35,9 +38,9 @@ fn diff_attributes(a: &mut Attributes, b: &Attributes) -> Vec<Diff> {
     result
 }
 
-pub type HandlerFunction<A> = Box<Fn(HandlerArg) -> Option<A>>;
-pub type Handler = (String, (u64, String));
-pub type Handlers = Vec<Handler>;
+type HandlerFunction<A> = Box<Fn(HandlerArg) -> Option<A>>;
+type Handler = (String, (u64, String));
+type Handlers = Vec<Handler>;
 
 fn diff_handlers(a: &mut Handlers, b: &Handlers) -> Vec<Diff> {
     let mut result = vec![];
@@ -268,7 +271,7 @@ where
 }
 
 pub trait App: 'static + Clone {
-    type State: Clone + Debug + 'static;
+    type State: Clone + Debug + PartialEq + 'static;
     type Action: Clone + Debug + 'static;
 
     fn reducer(state: Self::State, action: Self::Action) -> Self::State;
@@ -290,4 +293,82 @@ where
     let id = Uuid::from_random_bytes(bytes).to_string();
 
     (hasher.finish(), id, Box::new(f))
+}
+
+#[derive(Clone)]
+pub struct Env<A: App> {
+    state: Rc<RefCell<A::State>>,
+    node: Rc<RefCell<Node>>,
+    handler_map: Rc<RefCell<HandlerMap<A::Action>>>,
+    scheduled: Rc<Cell<bool>>,
+}
+
+impl<A: App> Env<A> {
+    pub fn new(state: A::State) -> Env<A> {
+        Env {
+            state: Rc::new(RefCell::new(state)),
+            node: Rc::new(RefCell::new(Node::Null)),
+            handler_map: Rc::new(RefCell::new(HashMap::new())),
+            scheduled: Rc::new(Cell::new(false)),
+        }
+    }
+
+    pub fn get_state(&self) -> A::State {
+        self.state.borrow().clone()
+    }
+
+    pub fn set_state(&self, state: A::State) {
+        *self.state.borrow_mut() = state;
+    }
+
+    pub fn get_node(&self) -> Node {
+        self.node.borrow().clone()
+    }
+
+    pub fn set_node(&self, node: Node) {
+        *self.node.borrow_mut() = node;
+    }
+
+    pub fn pop_handler(&self, id: &str) -> Option<HandlerFunction<A::Action>> {
+        self.handler_map.borrow_mut().remove(id)
+    }
+}
+
+pub trait Runtime<A: App> {
+    fn get_env<'a>(&'a self) -> &'a Env<A>;
+
+    fn handle_diff(&self, diff: Diff);
+
+    fn schedule_render(&self);
+
+    fn run(&self) {
+        let env = self.get_env();
+        env.scheduled.set(false);
+        let mut old_node = env.get_node();
+        let view = A::view(env.get_state());
+        *env.handler_map.borrow_mut() = view.handler_map;
+        if let Some(diff) = Node::diff(&mut old_node, &view.node, &mut 0) {
+            env.set_node(view.node);
+            self.handle_diff(diff);
+        }
+    }
+
+    fn call_handler(&self, id: &str, arg: HandlerArg) {
+        let env = self.get_env();
+        let handler = match env.pop_handler(id) {
+            Some(h) => h,
+            None => return,
+        };
+        let action = match handler(arg) {
+            Some(a) => a,
+            None => return,
+        };
+        let old_state = env.get_state();
+        let new_state = A::reducer(old_state.clone(), action);
+        if old_state != new_state && !env.scheduled.get() {
+            env.set_state(new_state);
+            env.scheduled.set(true);
+            self.schedule_render();
+        }
+    }
 }
