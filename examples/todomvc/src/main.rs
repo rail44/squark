@@ -10,7 +10,7 @@ use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{handler, App, HandlerArg, View, Runtime};
+use squark::{handler, App, HandlerArg, Runtime, View};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 

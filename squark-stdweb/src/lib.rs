@@ -9,7 +9,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::Bound::{Excluded, Included};
 
-use squark::{App, AttributeValue, Diff, HandlerArg, Element, Node, Runtime, Env};
+use squark::{App, AttributeValue, Diff, Element, Env, HandlerArg, Node, Runtime};
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web;
@@ -269,7 +269,7 @@ impl<A: App> StdwebRuntime<A> {
     }
 }
 
-impl<A:App> Runtime<A> for StdwebRuntime<A> {
+impl<A: App> Runtime<A> for StdwebRuntime<A> {
     fn get_env<'a>(&'a self) -> &'a Env<A> {
         &self.env
     }

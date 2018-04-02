@@ -4,7 +4,7 @@ extern crate squark;
 extern crate squark_macros;
 
 use squark_macros::view;
-use squark::{View, handler};
+use squark::{handler, View};
 
 fn v() -> View<()> {
     let not_completed_count = 1234;

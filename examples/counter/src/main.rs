@@ -7,7 +7,7 @@ extern crate stdweb;
 
 use stdweb::traits::*;
 use stdweb::web::document;
-use squark::{handler, App, View, Runtime};
+use squark::{handler, App, Runtime, View};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 
