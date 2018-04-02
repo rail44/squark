@@ -10,7 +10,7 @@ use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{handler, text, null, App, HandlerArg, View, view, bool, string};
+use squark::{handler, App, HandlerArg, View};
 use squark_stdweb::Runtime;
 use squark_macros::view;
 
@@ -34,15 +34,11 @@ impl ToString for Visibility {
 impl Visibility {
     pub fn view(&self, selected: bool) -> View<Action> {
         let this = self.clone();
-        let class = if selected {
-            "selected".to_string()
-        } else {
-            "".to_string()
-        };
+        let class = if selected { "selected" } else { "" };
         view! {
             <li>
-                <a class={ string(class) } style="cursor: pointer" onclick={ handler(self, move |_| { Some(Action::ChangeVisibility(this.clone())) }) }>
-                    { text(self.to_string()) }
+                <a class={ class } style="cursor: pointer" onclick={ handler(self, move |_| { Some(Action::ChangeVisibility(this.clone())) }) }>
+                    { self.to_string() }
                 </a>
             </li>
         }
@@ -82,16 +78,16 @@ impl Entry {
         }
 
         view! {
-            <li class={ string(class.join(" ")) }>
+            <li class={ class.join(" ") }>
                 {
                     if editing {
                         let id = format!("edit-{}", i);
                         view! {
                             <input
-                                id={ string(id.clone()) }
+                                id={ id.clone() }
                                 class="edit"
                                 type="text"
-                                value={ string(self.description.clone()) }
+                                value={ self.description.clone() }
                                 oninput={ handler((), |v| match v {
                                     HandlerArg::String(v) => Some(Action::UpdateEntry(v)),
                                     _ => None,
@@ -116,10 +112,17 @@ impl Entry {
                                 <input
                                     class="toggle"
                                     type="checkbox"
-                                    checked={ bool(completed) }
-                                    onclick={ handler((i, completed), move |_| { Some(Action::Check(i, !completed)) }) }/>
-                                <label ondblclick={ handler(i, move |_| { Some(Action::EditEntry(i)) }) }>
-                                    { text(self.description.clone()) }
+                                    checked={ completed }
+                                    onclick={
+                                        handler((i, completed), move |_| {
+                                            Some(Action::Check(i, !completed))
+                                        })
+                                    }/>
+                                <label ondblclick={
+                                    handler(i, move |_| { Some(Action::EditEntry(i))
+                                    })
+                                }>
+                                    { self.description.clone() }
                                 </label>
                                 <button class="destroy" onclick={ handler(i, move |_| { Some(Action::Remove(i)) }) } />
                             </div>
@@ -187,7 +190,7 @@ fn header_view(state: &State) -> View<Action> {
             <input
                 class="new-todo"
                 placeholder="What needs to be done?"
-                value={ string(state.field.clone()) }
+                value={ state.field.clone() }
                 oninput={ handler((), |v| match v {
                     HandlerArg::String(v) => Some(Action::UpdateField(v)),
                     _ => None,
@@ -206,33 +209,30 @@ fn main_view(state: &State) -> View<Action> {
         <section class="main">
             {
                 if state.entries.len() > 0 {
-                    let mut attributes = vec![
-                        ("class".to_string(), "toggle-all".to_string()),
-                        ("type".to_string(), "checkbox".to_string()),
-                    ];
-                    if is_all_completed {
-                        attributes.push(("checked".to_string(), "true".to_string()));
-                    }
                     view! {
                         <span>
                             <input
                                 class="toggle-all"
                                 type="checkbox"
-                                checked={ bool(is_all_completed) }
-                                onclick={ handler(is_all_completed, move |_| { Some(Action::CheckAll(!is_all_completed)) }) } />
+                                checked={ is_all_completed }
+                                onclick={
+                                    handler(is_all_completed, move |_| {
+                                        Some(Action::CheckAll(!is_all_completed))
+                                    })
+                                } />
                         </span>
                     }
                 } else {
-                    null()
+                    ().into()
                 }
 
             }
             {
-                view(
+                View::new(
                     "ul".to_string(),
                     vec![
-                        ("class".to_string(), string("todo-list".to_string())),
-                        ("type".to_string(), string("checkbox".to_string())),
+                        ("class".to_string(), "todo-list".into()),
+                        ("type".to_string(), "checkbox".into()),
                     ],
                     vec![],
                     state
@@ -253,21 +253,21 @@ fn main_view(state: &State) -> View<Action> {
 
 fn footer_view(state: &State) -> View<Action> {
     if state.entries.is_empty() {
-        return null();
+        return ().into();
     }
     view! {
         <footer class="footer">
             <span class="todo-count">
                 <strong>
-                    { text(state.not_completed_count().to_string()) }
+                    { state.not_completed_count().to_string() }
                 </strong>
                 item(s) left
             </span>
             {
-                view(
+                View::new(
                     "ul".to_string(),
                     vec![
-                        ("class".to_string(), string("filters".to_string())),
+                        ("class".to_string(), "filters".into()),
                     ],
                     vec![],
                     vec![Visibility::All, Visibility::Active, Visibility::Completed]
@@ -284,7 +284,7 @@ fn footer_view(state: &State) -> View<Action> {
                         </button>
                     }
                 } else {
-                    null()
+                    ().into()
                 }
             }
         </footer>

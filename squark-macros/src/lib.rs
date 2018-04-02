@@ -5,9 +5,9 @@ extern crate pest;
 extern crate pest_derive;
 extern crate proc_macro;
 
-use proc_macro::{quote, TokenStream, TokenNode, Literal, Term};
+use proc_macro::{quote, Literal, Term, TokenNode, TokenStream};
 use pest::Parser;
-use pest::iterators::{Pairs, Pair};
+use pest::iterators::{Pair, Pairs};
 use parser::{Parser as ViewParser, Rule};
 use std::iter::FromIterator;
 use std::str::FromStr;
@@ -29,20 +29,21 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
     for i in 0..(vec.len() / 2) {
         let j = i * 2;
         let k = &vec[j].as_str();
-        let v = &vec[j+1];
+        let v = &vec[j + 1];
 
         let _v = match v.as_rule() {
             Rule::embedded => {
-                TokenStream::from_str(v.as_str()).unwrap()
-            },
+                let _token = TokenStream::from_str(v.as_str()).unwrap();
+                quote! { $_token.into() }
+            }
             Rule::string => {
                 let _v = TokenNode::Literal(Literal::string(v.as_str()));
-                quote! { _squark::string($_v.to_string()) }
-            },
+                quote! { $_v.into() }
+            }
             Rule::bool => {
                 let _v = TokenNode::Term(Term::intern(v.as_str()));
-                quote! { _squark::bool($_v) }
-            },
+                quote! { $_v.into() }
+            }
             _ => unreachable!(),
         };
 
@@ -63,7 +64,6 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
     let _attributes = TokenStream::from_iter(attributes);
     let _handlers = TokenStream::from_iter(handlers);
 
-
     let mut children = vec![];
     if let Some(children_pair) = tag_pairs.next() {
         for p in children_pair.into_inner() {
@@ -73,19 +73,19 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
                     quote! {
                         $_tag,
                     }
-                },
+                }
                 Rule::text => {
                     let _text = TokenNode::Literal(Literal::string(p.as_str()));
                     quote! {
-                        _squark::text($_text.to_string()),
+                        $_text.into(),
                     }
-                },
+                }
                 Rule::embedded => {
                     let _embedded = TokenStream::from_str(p.as_str()).unwrap();
                     quote! {
-                        $_embedded,
+                        {$_embedded}.into(),
                     }
-                },
+                }
                 _ => unreachable!(),
             };
             children.push(token);
@@ -94,7 +94,7 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
     let _children = TokenStream::from_iter(children);
 
     quote! {
-        _squark::view(
+        _squark::View::new(
             $_name.to_string(),
             vec![
                 $_attributes
