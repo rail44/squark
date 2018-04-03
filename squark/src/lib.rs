@@ -334,12 +334,14 @@ impl<A: App> Env<A> {
     }
 }
 
-pub trait Runtime<A: App> {
+pub trait Runtime<A: App>: Clone + 'static {
     fn get_env<'a>(&'a self) -> &'a Env<A>;
 
     fn handle_diff(&self, diff: Diff);
 
     fn schedule_render(&self);
+
+    fn debug<T: Debug + 'static>(v: T);
 
     fn run(&self) {
         let env = self.get_env();
@@ -353,22 +355,32 @@ pub trait Runtime<A: App> {
         }
     }
 
-    fn call_handler(&self, id: &str, arg: HandlerArg) {
-        let env = self.get_env();
-        let handler = match env.pop_handler(id) {
+    fn get_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg)>> {
+        let handler = match self.get_env().pop_handler(id) {
             Some(h) => h,
-            None => return,
+            None => return None,
         };
-        let action = match handler(arg) {
-            Some(a) => a,
-            None => return,
-        };
-        let old_state = env.get_state();
-        let new_state = A::reducer(old_state.clone(), action);
-        if old_state != new_state && !env.scheduled.get() {
+        let this = self.clone();
+        let f = move |arg: HandlerArg| {
+            let action = match handler(arg) {
+                Some(a) => a,
+                None => return,
+            };
+
+            let env = this.get_env();
+
+            let old_state = env.get_state();
+            let new_state = A::reducer(old_state.clone(), action);
+            if old_state == new_state {
+                return;
+            }
             env.set_state(new_state);
+            if env.scheduled.get() {
+                return;
+            }
             env.scheduled.set(true);
-            self.schedule_render();
-        }
+            this.schedule_render();
+        };
+        Some(Box::new(f))
     }
 }
