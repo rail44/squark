@@ -8,7 +8,7 @@ Virtual DOM implemention and application definition inspired from [HyperApp](htt
 ## squark-macros
 
 [![crates.io](https://img.shields.io/crates/v/squark-macros.svg)](https://crates.io/crates/squark-macros)
-[![docs.rs](https://docs.rs/squark-macros/badge.svg)](https://docs.rs/squark-macros/*/squark-macros/)
+[![docs.rs](https://docs.rs/squark-macros/badge.svg)](https://docs.rs/squark-macros/*/squark_macros/)
 
 Crate that providing JSX like macro by `proc_marco` and [pest](https://github.com/pest-parser/pest) parser.
 
@@ -25,7 +25,7 @@ view! {
 ## squark-stdweb
 
 [![crates.io](https://img.shields.io/crates/v/squark-stdweb.svg)](https://crates.io/crates/squark-stdweb)
-[![docs.rs](https://docs.rs/squark-stdweb/badge.svg)](https://docs.rs/squark-stdweb/*/squark-stdweb/)
+[![docs.rs](https://docs.rs/squark-stdweb/badge.svg)](https://docs.rs/squark-stdweb/*/squark_stdweb/)
 
 Squark runtime implemention for web browser with usinng [stdweb](https://github.com/koute/stdweb/).
 
