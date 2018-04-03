@@ -4,6 +4,7 @@ extern crate squark;
 #[macro_use]
 extern crate stdweb;
 
+use std::fmt::Debug;
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -88,7 +89,7 @@ fn set_attribute(el: &web::Element, name: &str, value: &AttributeValue) {
     match value {
         &AttributeValue::Bool(ref b) => {
             js! { @{el.clone()}[@{name}] = @{b} };
-            el.set_attribute(name, b.to_string().as_str()).unwrap();
+            el.set_attribute(name, &b.to_string()).unwrap();
         }
         &AttributeValue::String(ref s) => {
             js! { @{el.clone()}[@{name}] = @{s} };
@@ -232,10 +233,9 @@ impl<A: App> StdwebRuntime<A> {
             "input" => self._set_handler::<InputEvent>(&el, id),
             "keydown" => self._set_handler::<KeyDownEvent>(&el, id),
             "render" => {
-                let this = self.clone();
-                let cloned_id = id.to_string();
+                let handler = self.get_handler(&id);
                 window().request_animation_frame(move |_| {
-                    this.call_handler(&cloned_id, json!{null});
+                    handler(json!{null});
                 });
                 return;
             }
@@ -250,7 +250,7 @@ impl<A: App> StdwebRuntime<A> {
         }
         map.entry(pos.clone())
             .or_insert(HashMap::new())
-            .insert(name.to_string(), handle);
+            .insert(name.to_owned(), handle);
     }
 
     fn _set_handler<E: ConcreteEvent + ToHandlerArg>(
@@ -258,18 +258,21 @@ impl<A: App> StdwebRuntime<A> {
         el: &web::Element,
         id: &str,
     ) -> EventListenerHandle {
-        let this = self.clone();
-        let cloned_id = id.to_string();
+        let handler = self.get_handler(id);
         el.clone().add_event_listener(move |e: E| {
             e.stop_propagation();
             let arg = e.to_handler_arg();
-            this.call_handler(&cloned_id, arg);
+            handler(arg);
             e.prevent_default();
         })
     }
 }
 
 impl<A: App> Runtime<A> for StdwebRuntime<A> {
+    fn debug<T: Debug>(v: T) {
+        console!(log, format!("{:?}", v));
+    }
+
     fn get_env<'a>(&'a self) -> &'a Env<A> {
         &self.env
     }

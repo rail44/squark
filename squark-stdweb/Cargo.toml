@@ -1,6 +1,6 @@
 [package]
 name = "squark-stdweb"
-version = "0.3.0"
+version = "0.3.2"
 authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
 license = "WTFPL"
 readme = "README.md"
