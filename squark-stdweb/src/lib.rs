@@ -233,7 +233,7 @@ impl<A: App> StdwebRuntime<A> {
             "input" => self._set_handler::<InputEvent>(&el, id),
             "keydown" => self._set_handler::<KeyDownEvent>(&el, id),
             "render" => {
-                let handler = self.get_handler(&id);
+                let handler = self.pop_handler(&id).unwrap();
                 window().request_animation_frame(move |_| {
                     handler(json!{null});
                 });
@@ -258,12 +258,13 @@ impl<A: App> StdwebRuntime<A> {
         el: &web::Element,
         id: &str,
     ) -> EventListenerHandle {
-        let handler = self.get_handler(id);
+        let handler = self.pop_handler(id).unwrap();
         el.clone().add_event_listener(move |e: E| {
             e.stop_propagation();
             let arg = e.to_handler_arg();
-            handler(arg);
-            e.prevent_default();
+            if handler(arg) {
+                e.prevent_default();
+            }
         })
     }
 }

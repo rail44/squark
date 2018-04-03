@@ -355,7 +355,7 @@ pub trait Runtime<A: App>: Clone + 'static {
         }
     }
 
-    fn get_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg)>> {
+    fn pop_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg) -> bool>> {
         let handler = match self.get_env().pop_handler(id) {
             Some(h) => h,
             None => return None,
@@ -364,7 +364,7 @@ pub trait Runtime<A: App>: Clone + 'static {
         let f = move |arg: HandlerArg| {
             let action = match handler(arg) {
                 Some(a) => a,
-                None => return,
+                None => return false,
             };
 
             let env = this.get_env();
@@ -372,14 +372,15 @@ pub trait Runtime<A: App>: Clone + 'static {
             let old_state = env.get_state();
             let new_state = A::reducer(old_state.clone(), action);
             if old_state == new_state {
-                return;
+                return false;
             }
             env.set_state(new_state);
             if env.scheduled.get() {
-                return;
+                return false;
             }
             env.scheduled.set(true);
             this.schedule_render();
+            true
         };
         Some(Box::new(f))
     }
