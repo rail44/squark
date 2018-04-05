@@ -3,7 +3,7 @@ extern crate serde_json;
 extern crate uuid;
 
 use std::fmt::Debug;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
@@ -91,6 +91,15 @@ impl Node {
             _ => Some(Diff::ReplaceChild(i.clone(), b.clone())),
         }
     }
+
+    fn get_key(&self) -> Option<String> {
+        match self {
+            &Node::Element(ref el) => {
+                el.get_key()
+            }
+            _ => None,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -116,7 +125,17 @@ impl Element {
         }
     }
 
+    fn get_children_key_set(&self) -> HashSet<String> {
+        HashSet::from_iter(self.children.iter().filter_map(|c| c.get_key()))
+    }
+
     pub fn diff(a: &mut Element, b: &Element, j: &usize) -> Option<Diff> {
+        if let (Some(a_key), Some(b_key)) = (a.get_key(), b.get_key()) {
+            if a_key != b_key {
+                return Some(Diff::ReplaceChild(j.clone(), Node::Element(b.clone())));
+            }
+        }
+
         if a.name != b.name {
             return Some(Diff::ReplaceChild(j.clone(), Node::Element(b.clone())));
         }
@@ -125,6 +144,27 @@ impl Element {
 
         result.append(&mut diff_attributes(&mut a.attributes, &b.attributes));
         result.append(&mut diff_handlers(&mut a.handlers, &b.handlers));
+
+        let b_key_set = b.get_children_key_set();
+        let mut i = 0;
+        let children = a.children.drain(..).filter(|c| {
+            match c.get_key() {
+                Some(k) => {
+                    let is_survived = b_key_set.contains(&k);
+                    if !is_survived {
+                        result.push(Diff::RemoveChild(i));
+                        return false;
+                    }
+                    i += 1;
+                    true
+                }
+                None => {
+                    i += 1;
+                    true
+                }
+            }
+        }).collect();
+        a.children = children;
 
         let mut i = 0;
         a.children.reverse();
@@ -151,6 +191,15 @@ impl Element {
             return None;
         }
         Some(Diff::PatchChild(j.clone(), result))
+    }
+
+    fn get_key(&self) -> Option<String> {
+        self.attributes.iter()
+            .find(|&&(ref k, _)| k == "key")
+            .and_then(|&(_, ref v)| match v {
+                &AttributeValue::String(ref s) => Some(s.clone()),
+                &AttributeValue::Bool(_) => None,
+            })
     }
 }
 
@@ -341,8 +390,6 @@ pub trait Runtime<A: App>: Clone + 'static {
 
     fn schedule_render(&self);
 
-    fn debug<T: Debug + 'static>(v: T);
-
     fn run(&self) {
         let env = self.get_env();
         env.scheduled.set(false);
@@ -355,16 +402,14 @@ pub trait Runtime<A: App>: Clone + 'static {
         }
     }
 
-    fn pop_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg) -> bool>> {
-        let handler = match self.get_env().pop_handler(id) {
-            Some(h) => h,
-            None => return None,
-        };
+    fn pop_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg)>> {
+        let handler = self.get_env().pop_handler(id)?;
+
         let this = self.clone();
         let f = move |arg: HandlerArg| {
             let action = match handler(arg) {
                 Some(a) => a,
-                None => return false,
+                None => return,
             };
 
             let env = this.get_env();
@@ -372,15 +417,14 @@ pub trait Runtime<A: App>: Clone + 'static {
             let old_state = env.get_state();
             let new_state = A::reducer(old_state.clone(), action);
             if old_state == new_state {
-                return false;
+                return;
             }
             env.set_state(new_state);
             if env.scheduled.get() {
-                return false;
+                return;
             }
             env.scheduled.set(true);
             this.schedule_render();
-            true
         };
         Some(Box::new(f))
     }

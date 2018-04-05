@@ -9,3 +9,5 @@ squark-macros = { "path" = "../../squark-macros" }
 squark-stdweb = { "path" = "../../squark-stdweb" }
 stdweb = "0.4.2"
 serde_json = "1.0.13"
+uuid = "0.6.2"
+rand = { version = "0.5.0-pre.0", features = ["stdweb"] }

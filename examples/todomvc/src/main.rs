@@ -5,6 +5,8 @@ extern crate squark;
 extern crate squark_macros;
 extern crate squark_stdweb;
 extern crate stdweb;
+extern crate rand;
+extern crate uuid;
 
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
@@ -13,6 +15,8 @@ use stdweb::web::html_element::InputElement;
 use squark::{handler, App, HandlerArg, Runtime, View};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
+use rand::{OsRng, RngCore};
+use uuid::Uuid;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
 enum Visibility {
@@ -47,13 +51,20 @@ impl Visibility {
 
 #[derive(Clone, Debug, PartialEq)]
 struct Entry {
+    id: String,
     description: String,
     completed: bool,
 }
 
 impl Entry {
     pub fn new(description: String) -> Entry {
+        let mut rng = OsRng::new().unwrap();
+        let mut bytes = [0; 16];
+        rng.fill_bytes(&mut bytes);
+        let id = Uuid::from_random_bytes(bytes).to_string();
+
         Entry {
+            id,
             description,
             completed: false,
         }
@@ -78,7 +89,7 @@ impl Entry {
         }
 
         view! {
-            <li class={ class.join(" ") }>
+            <li key={ self.id.clone() } class={ class.join(" ") }>
                 {
                     if editing {
                         let id = format!("edit-{}", i);
