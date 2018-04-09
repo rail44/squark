@@ -1,11 +1,11 @@
 #![feature(proc_macro)]
 
+extern crate rand;
 extern crate serde_json;
 extern crate squark;
 extern crate squark_macros;
 extern crate squark_stdweb;
 extern crate stdweb;
-extern crate rand;
 extern crate uuid;
 
 use std::iter::FromIterator;
@@ -13,7 +13,7 @@ use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{handler, App, HandlerArg, Runtime, View, Child};
+use squark::{handler, App, Child, HandlerArg, Runtime, View};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 use rand::{OsRng, RngCore};
@@ -270,9 +270,11 @@ fn footer_view(state: &State) -> View<Action> {
             </span>
             <ul class="filters">
                 {
-                    Child::from_iter(vec![Visibility::All, Visibility::Active, Visibility::Completed]
-                        .into_iter()
-                        .map(|v| v.view(v == state.visibility)))
+                    Child::from_iter(
+                        vec![Visibility::All, Visibility::Active, Visibility::Completed]
+                            .into_iter()
+                            .map(|v| v.view(v == state.visibility))
+                    )
                 }
             </ul>
             {

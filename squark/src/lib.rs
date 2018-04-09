@@ -94,9 +94,7 @@ impl Node {
 
     fn get_key(&self) -> Option<String> {
         match self {
-            &Node::Element(ref el) => {
-                el.get_key()
-            }
+            &Node::Element(ref el) => el.get_key(),
             _ => None,
         }
     }
@@ -109,8 +107,8 @@ fn get_nodelist_key_set(nodelist: &Vec<Node>) -> HashSet<String> {
 pub fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
     let mut result = vec![];
     let b_key_set = get_nodelist_key_set(b);
-    let survived = a.drain(..).filter(|c| {
-        match c.get_key() {
+    let survived = a.drain(..)
+        .filter(|c| match c.get_key() {
             Some(k) => {
                 let is_survived = b_key_set.contains(&k);
                 if !is_survived {
@@ -124,8 +122,8 @@ pub fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Dif
                 *i += 1;
                 true
             }
-        }
-    }).collect();
+        })
+        .collect();
     *a = survived;
 
     let mut i = 0;
@@ -197,7 +195,8 @@ impl Element {
     }
 
     fn get_key(&self) -> Option<String> {
-        self.attributes.iter()
+        self.attributes
+            .iter()
             .find(|&&(ref k, _)| k == "key")
             .and_then(|&(_, ref v)| match v {
                 &AttributeValue::String(ref s) => Some(s.clone()),
@@ -254,14 +253,20 @@ pub enum Child<A> {
     ViewList(Vec<View<A>>),
 }
 
-impl<A, T> From<T> for Child<A> where T: Into<View<A>> + Sized {
+impl<A, T> From<T> for Child<A>
+where
+    T: Into<View<A>> + Sized,
+{
     fn from(v: T) -> Child<A> {
         Child::View(v.into())
     }
 }
 
 impl<A> FromIterator<View<A>> for Child<A> {
-    fn from_iter<I>(iter: I) -> Child<A> where I: IntoIterator<Item = View<A>> {
+    fn from_iter<I>(iter: I) -> Child<A>
+    where
+        I: IntoIterator<Item = View<A>>,
+    {
         Child::ViewList(iter.into_iter().collect())
     }
 }
@@ -290,12 +295,10 @@ impl<A> View<A> {
                     handler_map.extend(v.handler_map);
                     children_vec.push(v.node);
                 }
-                Child::ViewList(child_vec) => {
-                    for v in child_vec {
-                        handler_map.extend(v.handler_map);
-                        children_vec.push(v.node);
-                    }
-                }
+                Child::ViewList(child_vec) => for v in child_vec {
+                    handler_map.extend(v.handler_map);
+                    children_vec.push(v.node);
+                },
             }
         }
 

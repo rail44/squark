@@ -71,7 +71,9 @@ pub struct StdwebRuntime<A: App> {
 fn insert_at<N: INode>(parent: &web::Element, i: usize, node: N) {
     match parent.child_nodes().into_iter().nth(i) {
         Some(ref_node) => {
-            parent.insert_before(&node, &ref_node).expect("Failed to insert at given position");
+            parent
+                .insert_before(&node, &ref_node)
+                .expect("Failed to insert at given position");
         }
         None => {
             parent.append_child(&node);
@@ -80,19 +82,27 @@ fn insert_at<N: INode>(parent: &web::Element, i: usize, node: N) {
 }
 
 fn replace_at<N: INode>(parent: &web::Element, i: usize, node: N) {
-    let current = parent.child_nodes().into_iter().nth(i).expect("Could not find node by given index");
-    parent.replace_child(&node, &current).expect("Failed to replace child");
+    let current = parent
+        .child_nodes()
+        .into_iter()
+        .nth(i)
+        .expect("Could not find node by given index");
+    parent
+        .replace_child(&node, &current)
+        .expect("Failed to replace child");
 }
 
 fn set_attribute(el: &web::Element, name: &str, value: &AttributeValue) {
     match value {
         &AttributeValue::Bool(ref b) => {
             js! { @{el.clone()}[@{name}] = @{b} };
-            el.set_attribute(name, &b.to_string()).expect("Failet to set bool attirbute");
+            el.set_attribute(name, &b.to_string())
+                .expect("Failet to set bool attirbute");
         }
         &AttributeValue::String(ref s) => {
             js! { @{el.clone()}[@{name}] = @{s} };
-            el.set_attribute(name, s).expect("Failed to set string attribute");
+            el.set_attribute(name, s)
+                .expect("Failed to set string attribute");
         }
     }
 }
@@ -111,10 +121,12 @@ impl<A: App> StdwebRuntime<A> {
         match diff {
             Diff::AddChild(i, node) => self.add_child(el, i, node, pos),
             Diff::PatchChild(i, diffs) => {
-                let child =
-                    web::Element::try_from(
-                        el.child_nodes().iter().nth(i).expect("Failed to find child for patching")
-                    ).expect("Failed to convert Node to Element");
+                let child = web::Element::try_from(
+                    el.child_nodes()
+                        .iter()
+                        .nth(i)
+                        .expect("Failed to find child for patching"),
+                ).expect("Failed to convert Node to Element");
                 pos.push(i);
                 for diff in diffs {
                     self.handle_diff_inner(&child, diff, pos);
@@ -142,7 +154,9 @@ impl<A: App> StdwebRuntime<A> {
     }
 
     fn create_element(&self, el: Element, pos: &mut Position) -> web::Element {
-        let web_el = document().create_element(el.name.as_str()).expect("Failed to create element");
+        let web_el = document()
+            .create_element(el.name.as_str())
+            .expect("Failed to create element");
 
         for &(ref name, ref value) in el.attributes.iter() {
             set_attribute(&web_el, name, value);
@@ -208,7 +222,8 @@ impl<A: App> StdwebRuntime<A> {
 
     fn remove_attached(&self, pos: &Position) {
         let mut max = pos.clone();
-        let i = max.pop().expect("Failed to pop index from posion to use max range") + 1;
+        let i = max.pop()
+            .expect("Failed to pop index from posion to use max range") + 1;
         max.push(i);
         let range = (Included(pos.clone()), Excluded(max));
         let mut map = self.attached_map.borrow_mut();
@@ -222,8 +237,14 @@ impl<A: App> StdwebRuntime<A> {
     fn remove_child(&self, parent: &web::Element, i: usize, pos: &mut Position) {
         pos.push(i);
         self.remove_attached(pos);
-        let current = parent.child_nodes().into_iter().nth(i).expect("Could not find node for removing");
-        parent.remove_child(&current).expect("Failed to remove child");
+        let current = parent
+            .child_nodes()
+            .into_iter()
+            .nth(i)
+            .expect("Could not find node for removing");
+        parent
+            .remove_child(&current)
+            .expect("Failed to remove child");
         pos.pop();
     }
 
@@ -236,7 +257,8 @@ impl<A: App> StdwebRuntime<A> {
             "input" => self._set_handler::<InputEvent>(&el, id),
             "keydown" => self._set_handler::<KeyDownEvent>(&el, id),
             "render" => {
-                let handler = self.pop_handler(&id).expect("Could not find handler by given id");
+                let handler = self.pop_handler(&id)
+                    .expect("Could not find handler by given id");
                 window().request_animation_frame(move |_| {
                     handler(json!{null});
                 });
@@ -261,7 +283,8 @@ impl<A: App> StdwebRuntime<A> {
         el: &web::Element,
         id: &str,
     ) -> EventListenerHandle {
-        let handler = self.pop_handler(id).expect("Could not find handler by given id");
+        let handler = self.pop_handler(id)
+            .expect("Could not find handler by given id");
         el.clone().add_event_listener(move |e: E| {
             e.stop_propagation();
             let arg = e.to_handler_arg();
