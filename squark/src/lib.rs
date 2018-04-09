@@ -72,23 +72,23 @@ pub enum Node {
 }
 
 impl Node {
-    fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Vec<Diff> {
+    fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Option<Diff> {
         match (a, b) {
             (&mut Node::Element(ref mut a), &Node::Element(ref b)) => {
                 match Element::diff(a, b, i) {
-                    Some(diff) => vec![diff],
-                    None => vec![],
+                    Some(diff) => Some(diff),
+                    None => None,
                 }
             }
             (&mut Node::Text(ref mut text_a), &Node::Text(ref text_b)) => {
                 if text_a == text_b {
-                    return vec![];
+                    return None;
                 }
-                vec![Diff::ReplaceChild(i.clone(), b.clone())]
+                Some(Diff::ReplaceChild(i.clone(), b.clone()))
             }
-            (&mut Node::Null, &Node::Null) => vec![],
-            (&mut Node::Null, _) => vec![Diff::AddChild(i.clone(), b.clone())],
-            _ => vec![Diff::ReplaceChild(i.clone(), b.clone())],
+            (&mut Node::Null, &Node::Null) => None,
+            (&mut Node::Null, _) => Some(Diff::AddChild(i.clone(), b.clone())),
+            _ => Some(Diff::ReplaceChild(i.clone(), b.clone())),
         }
     }
 
@@ -135,7 +135,9 @@ pub fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Dif
                 i += 1;
             }
             Some(mut old_child) => {
-                result.append(&mut Node::diff(&mut old_child, new_child, &mut i));
+                if let Some(diff) = Node::diff(&mut old_child, new_child, &mut i) {
+                    result.push(diff);
+                }
             }
         }
         i += 1;
@@ -427,11 +429,8 @@ pub trait Runtime<A: App>: Clone + 'static {
         let mut old_node = env.get_node();
         let view = A::view(env.get_state());
         *env.handler_map.borrow_mut() = view.handler_map;
-        let vec = Node::diff(&mut old_node, &view.node, &mut 0);
-        if vec.len() > 0 {
+        if let Some(diff) = Node::diff(&mut old_node, &view.node, &mut 0) {
             env.set_node(view.node);
-        }
-        for diff in vec.into_iter() {
             self.handle_diff(diff);
         }
     }
