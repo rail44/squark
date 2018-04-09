@@ -71,7 +71,7 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
                 Rule::tag => {
                     let _tag = get_token_stream(p.into_inner());
                     quote! {
-                        $_tag,
+                        _squark::Child::from($_tag),
                     }
                 }
                 Rule::text => {

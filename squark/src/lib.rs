@@ -72,23 +72,23 @@ pub enum Node {
 }
 
 impl Node {
-    fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Option<Diff> {
+    fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Vec<Diff> {
         match (a, b) {
-            (&mut Node::Element(ref mut a), &Node::Element(ref b)) => Element::diff(a, b, &i),
+            (&mut Node::Element(ref mut a), &Node::Element(ref b)) => {
+                match Element::diff(a, b, i) {
+                    Some(diff) => vec![diff],
+                    None => vec![],
+                }
+            }
             (&mut Node::Text(ref mut text_a), &Node::Text(ref text_b)) => {
                 if text_a == text_b {
-                    return None;
+                    return vec![];
                 }
-                Some(Diff::ReplaceChild(i.clone(), b.clone()))
+                vec![Diff::ReplaceChild(i.clone(), b.clone())]
             }
-            (&mut Node::Null, &Node::Null) => None,
-            (&mut Node::Null, _) => Some(Diff::AddChild(i.clone(), b.clone())),
-            (_, &Node::Null) => {
-                let j = i.clone();
-                *i -= 1;
-                Some(Diff::RemoveChild(j))
-            }
-            _ => Some(Diff::ReplaceChild(i.clone(), b.clone())),
+            (&mut Node::Null, &Node::Null) => vec![],
+            (&mut Node::Null, _) => vec![Diff::AddChild(i.clone(), b.clone())],
+            _ => vec![Diff::ReplaceChild(i.clone(), b.clone())],
         }
     }
 
@@ -100,6 +100,54 @@ impl Node {
             _ => None,
         }
     }
+}
+
+fn get_nodelist_key_set(nodelist: &Vec<Node>) -> HashSet<String> {
+    HashSet::from_iter(nodelist.iter().filter_map(|c| c.get_key()))
+}
+
+pub fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
+    let mut result = vec![];
+    let b_key_set = get_nodelist_key_set(b);
+    let survived = a.drain(..).filter(|c| {
+        match c.get_key() {
+            Some(k) => {
+                let is_survived = b_key_set.contains(&k);
+                if !is_survived {
+                    result.push(Diff::RemoveChild(i.clone()));
+                    return false;
+                }
+                *i += 1;
+                true
+            }
+            None => {
+                *i += 1;
+                true
+            }
+        }
+    }).collect();
+    *a = survived;
+
+    let mut i = 0;
+    a.reverse();
+    for new_child in b.iter() {
+        match a.pop() {
+            None => {
+                result.push(Diff::AddChild(i, new_child.clone()));
+                i += 1;
+            }
+            Some(mut old_child) => {
+                result.append(&mut Node::diff(&mut old_child, new_child, &mut i));
+            }
+        }
+        i += 1;
+    }
+
+    for _ in a.iter() {
+        result.push(Diff::RemoveChild(i));
+    }
+
+    result
 }
 
 #[derive(Clone, Debug)]
@@ -125,72 +173,27 @@ impl Element {
         }
     }
 
-    fn get_children_key_set(&self) -> HashSet<String> {
-        HashSet::from_iter(self.children.iter().filter_map(|c| c.get_key()))
-    }
-
-    pub fn diff(a: &mut Element, b: &Element, j: &usize) -> Option<Diff> {
+    pub fn diff(a: &mut Element, b: &Element, i: &usize) -> Option<Diff> {
         if let (Some(a_key), Some(b_key)) = (a.get_key(), b.get_key()) {
             if a_key != b_key {
-                return Some(Diff::ReplaceChild(j.clone(), Node::Element(b.clone())));
+                return Some(Diff::ReplaceChild(i.clone(), Node::Element(b.clone())));
             }
         }
 
         if a.name != b.name {
-            return Some(Diff::ReplaceChild(j.clone(), Node::Element(b.clone())));
+            return Some(Diff::ReplaceChild(i.clone(), Node::Element(b.clone())));
         }
 
         let mut result = vec![];
 
         result.append(&mut diff_attributes(&mut a.attributes, &b.attributes));
         result.append(&mut diff_handlers(&mut a.handlers, &b.handlers));
-
-        let b_key_set = b.get_children_key_set();
-        let mut i = 0;
-        let children = a.children.drain(..).filter(|c| {
-            match c.get_key() {
-                Some(k) => {
-                    let is_survived = b_key_set.contains(&k);
-                    if !is_survived {
-                        result.push(Diff::RemoveChild(i));
-                        return false;
-                    }
-                    i += 1;
-                    true
-                }
-                None => {
-                    i += 1;
-                    true
-                }
-            }
-        }).collect();
-        a.children = children;
-
-        let mut i = 0;
-        a.children.reverse();
-        for new_child in &b.children {
-            match a.children.pop() {
-                None => {
-                    result.push(Diff::AddChild(i, new_child.clone()));
-                    i += 1;
-                }
-                Some(mut old_child) => {
-                    if let Some(d) = Node::diff(&mut old_child, new_child, &mut i) {
-                        result.push(d);
-                    }
-                }
-            }
-            i += 1;
-        }
-
-        for _ in &a.children {
-            result.push(Diff::RemoveChild(i));
-        }
+        result.append(&mut diff_children(&mut a.children, &b.children, &mut 0));
 
         if result.is_empty() {
             return None;
         }
-        Some(Diff::PatchChild(j.clone(), result))
+        Some(Diff::PatchChild(i.clone(), result))
     }
 
     fn get_key(&self) -> Option<String> {
@@ -246,12 +249,29 @@ pub struct View<A> {
     handler_map: HandlerMap<A>,
 }
 
+pub enum Child<A> {
+    View(View<A>),
+    ViewList(Vec<View<A>>),
+}
+
+impl<A, T> From<T> for Child<A> where T: Into<View<A>> + Sized {
+    fn from(v: T) -> Child<A> {
+        Child::View(v.into())
+    }
+}
+
+impl<A> FromIterator<View<A>> for Child<A> {
+    fn from_iter<I>(iter: I) -> Child<A> where I: IntoIterator<Item = View<A>> {
+        Child::ViewList(iter.into_iter().collect())
+    }
+}
+
 impl<A> View<A> {
     pub fn new(
         name: String,
         attributes: Attributes,
         handlers: Vec<(String, (u64, String, HandlerFunction<A>))>,
-        children: Vec<View<A>>,
+        children: Vec<Child<A>>,
     ) -> View<A> {
         let mut handler_map = HashMap::new();
         let handlers = handlers
@@ -263,16 +283,24 @@ impl<A> View<A> {
             })
             .collect();
 
-        let children = children
-            .into_iter()
-            .map(|child| {
-                handler_map.extend(child.handler_map);
-                child.node
-            })
-            .collect();
+        let mut children_vec = vec![];
+        for child in children.into_iter() {
+            match child {
+                Child::View(v) => {
+                    handler_map.extend(v.handler_map);
+                    children_vec.push(v.node);
+                }
+                Child::ViewList(child_vec) => {
+                    for v in child_vec {
+                        handler_map.extend(v.handler_map);
+                        children_vec.push(v.node);
+                    }
+                }
+            }
+        }
 
         View {
-            node: Node::Element(Element::new(name, attributes, handlers, children)),
+            node: Node::Element(Element::new(name, attributes, handlers, children_vec)),
             handler_map,
         }
     }
@@ -396,8 +424,11 @@ pub trait Runtime<A: App>: Clone + 'static {
         let mut old_node = env.get_node();
         let view = A::view(env.get_state());
         *env.handler_map.borrow_mut() = view.handler_map;
-        if let Some(diff) = Node::diff(&mut old_node, &view.node, &mut 0) {
+        let vec = Node::diff(&mut old_node, &view.node, &mut 0);
+        if vec.len() > 0 {
             env.set_node(view.node);
+        }
+        for diff in vec.into_iter() {
             self.handle_diff(diff);
         }
     }

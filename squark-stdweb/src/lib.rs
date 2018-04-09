@@ -107,11 +107,14 @@ impl<A: App> StdwebRuntime<A> {
     }
 
     fn handle_diff_inner(&self, el: &web::Element, diff: Diff, pos: &mut Position) {
+        console!(log, format!("{:?}", diff));
         match diff {
             Diff::AddChild(i, node) => self.add_child(el, i, node, pos),
             Diff::PatchChild(i, diffs) => {
                 let child =
-                    web::Element::try_from(el.child_nodes().iter().nth(i).expect("Failed to find child for patching")).expect("Failed to convert Node to Element");
+                    web::Element::try_from(
+                        el.child_nodes().iter().nth(i).expect("Failed to find child for patching")
+                    ).expect("Failed to convert Node to Element");
                 pos.push(i);
                 for diff in diffs {
                     self.handle_diff_inner(&child, diff, pos);

@@ -8,11 +8,12 @@ extern crate stdweb;
 extern crate rand;
 extern crate uuid;
 
+use std::iter::FromIterator;
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{handler, App, HandlerArg, Runtime, View};
+use squark::{handler, App, HandlerArg, Runtime, View, Child};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 use rand::{OsRng, RngCore};
@@ -238,15 +239,9 @@ fn main_view(state: &State) -> View<Action> {
                 }
 
             }
-            {
-                View::new(
-                    "ul".to_string(),
-                    vec![
-                        ("class".to_string(), "todo-list".into()),
-                        ("type".to_string(), "checkbox".into()),
-                    ],
-                    vec![],
-                    state
+            <ul class="todo-list" type="checkbox">
+                {
+                    Child::from_iter(state
                         .entries
                         .iter()
                         .enumerate()
@@ -254,10 +249,9 @@ fn main_view(state: &State) -> View<Action> {
                         .map(|(i, e)| {
                             let is_editing = state.editing.as_ref().map_or(false, |at| &i == at);
                             e.view(i, is_editing)
-                        })
-                        .collect()
-                )
-            }
+                        }))
+                }
+            </ul>
         </section>
     }
 }
@@ -274,19 +268,13 @@ fn footer_view(state: &State) -> View<Action> {
                 </strong>
                 item(s) left
             </span>
-            {
-                View::new(
-                    "ul".to_string(),
-                    vec![
-                        ("class".to_string(), "filters".into()),
-                    ],
-                    vec![],
-                    vec![Visibility::All, Visibility::Active, Visibility::Completed]
+            <ul class="filters">
+                {
+                    Child::from_iter(vec![Visibility::All, Visibility::Active, Visibility::Completed]
                         .into_iter()
-                        .map(|v| v.view(v == state.visibility))
-                        .collect()
-                )
-            }
+                        .map(|v| v.view(v == state.visibility)))
+                }
+            </ul>
             {
                 if state.has_completed() {
                     view! {
