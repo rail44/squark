@@ -104,7 +104,7 @@ fn get_nodelist_key_set(nodelist: &Vec<Node>) -> HashSet<String> {
     HashSet::from_iter(nodelist.iter().filter_map(|c| c.get_key()))
 }
 
-pub fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
+fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
     let mut result = vec![];
     let b_key_set = get_nodelist_key_set(b);
     let survived = a.drain(..)
@@ -159,7 +159,7 @@ pub struct Element {
 }
 
 impl Element {
-    pub fn new(
+    fn new(
         name: String,
         attributes: Attributes,
         handlers: Handlers,
@@ -173,7 +173,7 @@ impl Element {
         }
     }
 
-    pub fn diff(a: &mut Element, b: &Element, i: &usize) -> Option<Diff> {
+    fn diff(a: &mut Element, b: &Element, i: &usize) -> Option<Diff> {
         if let (Some(a_key), Some(b_key)) = (a.get_key(), b.get_key()) {
             if a_key != b_key {
                 return Some(Diff::ReplaceChild(i.clone(), Node::Element(b.clone())));
