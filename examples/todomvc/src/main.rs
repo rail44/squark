@@ -13,7 +13,7 @@ use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{handler, App, Child, HandlerArg, Runtime, View};
+use squark::{App, Child, HandlerArg, Runtime, View};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 use rand::{OsRng, RngCore};
@@ -42,7 +42,7 @@ impl Visibility {
         let class = if selected { "selected" } else { "" };
         view! {
             <li>
-                <a class={ class } style="cursor: pointer" onclick={ handler(self, move |_| { Some(Action::ChangeVisibility(this.clone())) }) }>
+                <a class={ class } style="cursor: pointer" onclick={ move |_| { Some(Action::ChangeVisibility(this.clone())) } }>
                     { self.to_string() }
                 </a>
             </li>
@@ -100,23 +100,23 @@ impl Entry {
                                 class="edit"
                                 type="text"
                                 value={ self.description.clone() }
-                                oninput={ handler((), |v| match v {
+                                oninput={ |v| match v {
                                     HandlerArg::String(v) => Some(Action::UpdateEntry(v)),
                                     _ => None,
-                                }) }
-                                onkeydown={ handler((), |v| match v {
+                                } }
+                                onkeydown={ |v| match v {
                                     HandlerArg::String(ref v) if v.as_str() == "Enter" => {
                                         Some(Action::EndEditing)
                                     }
                                     _ => None,
-                                }) }
-                                onblur={ handler((), move |_| Some(Action::EndEditing)) }
-                                onrender={ handler((), move |_| {
+                                } }
+                                onblur={ move |_| Some(Action::EndEditing) }
+                                onrender={ move |_| {
                                     InputElement::try_from(
                                         document().get_element_by_id(id.as_str()).unwrap()
                                     ).unwrap().focus();
                                     None
-                                }) } />
+                                } } />
                         }
                     } else {
                         view! {
@@ -126,17 +126,17 @@ impl Entry {
                                     type="checkbox"
                                     checked={ completed }
                                     onclick={
-                                        handler((i, completed), move |_| {
+                                        move |_| {
                                             Some(Action::Check(i, !completed))
-                                        })
+                                        }
                                     }/>
                                 <label ondblclick={
-                                    handler(i, move |_| { Some(Action::EditEntry(i))
-                                    })
+                                    move |_| { Some(Action::EditEntry(i))
+                                    }
                                 }>
                                     { self.description.clone() }
                                 </label>
-                                <button class="destroy" onclick={ handler(i, move |_| { Some(Action::Remove(i)) }) } />
+                                <button class="destroy" onclick={ move |_| { Some(Action::Remove(i)) } } />
                             </div>
                         }
                     }
@@ -203,14 +203,14 @@ fn header_view(state: &State) -> View<Action> {
                 class="new-todo"
                 placeholder="What needs to be done?"
                 value={ state.field.clone() }
-                oninput={ handler((), |v| match v {
+                oninput={ |v| match v {
                     HandlerArg::String(v) => Some(Action::UpdateField(v)),
                     _ => None,
-                }) }
-                onkeydown={ handler((), |v| match v {
+                } }
+                onkeydown={ |v| match v {
                     HandlerArg::String(ref v) if v.as_str() == "Enter" => Some(Action::Add),
                     _ => None,
-                }) } />
+                } } />
         </header>
     }
 }
@@ -228,9 +228,9 @@ fn main_view(state: &State) -> View<Action> {
                                 type="checkbox"
                                 checked={ is_all_completed }
                                 onclick={
-                                    handler(is_all_completed, move |_| {
+                                    move |_| {
                                         Some(Action::CheckAll(!is_all_completed))
-                                    })
+                                    }
                                 } />
                         </span>
                     }
@@ -280,7 +280,7 @@ fn footer_view(state: &State) -> View<Action> {
             {
                 if state.has_completed() {
                     view! {
-                        <button class="clear-completed" onclick={ handler((), move |_| { Some(Action::RemoveComplete) }) }>
+                        <button class="clear-completed" onclick={ move |_| { Some(Action::RemoveComplete) } }>
                             Clear completed
                         </button>
                     }

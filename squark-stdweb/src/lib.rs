@@ -117,7 +117,6 @@ impl<A: App> StdwebRuntime<A> {
     }
 
     fn handle_diff_inner(&self, el: &web::Element, diff: Diff, pos: &mut Position) {
-        console!(log, format!("{:?}", diff));
         match diff {
             Diff::AddChild(i, node) => self.add_child(el, i, node, pos),
             Diff::PatchChild(i, diffs) => {
@@ -162,7 +161,7 @@ impl<A: App> StdwebRuntime<A> {
             set_attribute(&web_el, name, value);
         }
 
-        for &(ref name, (_, ref id)) in el.handlers.iter() {
+        for &(ref name, ref id) in el.handlers.iter() {
             self.set_handler(&web_el, name, &id, pos);
         }
 

@@ -4,8 +4,6 @@ extern crate uuid;
 
 use std::fmt::Debug;
 use std::collections::{HashMap, HashSet};
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 use std::iter::FromIterator;
 use std::rc::Rc;
 use std::cell::{Cell, RefCell};
@@ -39,25 +37,23 @@ fn diff_attributes(a: &mut Attributes, b: &Attributes) -> Vec<Diff> {
 }
 
 type HandlerFunction<A> = Box<Fn(HandlerArg) -> Option<A>>;
-type Handler = (String, (u64, String));
+type Handler = (String, String);
 type Handlers = Vec<Handler>;
 
 fn diff_handlers(a: &mut Handlers, b: &Handlers) -> Vec<Diff> {
     let mut result = vec![];
 
-    let mut old_map = HashMap::<String, (u64, String)>::from_iter(a.drain(..));
-    for &(ref new_key, (ref new_hash, ref new_id)) in b {
+    let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
+    for &(ref new_key, ref new_id) in b {
         match old_map.remove(new_key) {
-            Some((old_hash, _)) => {
-                if &old_hash != new_hash {
-                    result.push(Diff::SetHandler(new_key.clone(), new_id.clone()))
-                }
+            Some(_) => {
+                result.push(Diff::SetHandler(new_key.clone(), new_id.clone()))
             }
             None => result.push(Diff::SetHandler(new_key.clone(), new_id.clone())),
         }
     }
 
-    for (old_key, (_, old_id)) in old_map.drain() {
+    for (old_key, old_id) in old_map.drain() {
         result.push(Diff::RemoveHandler(old_key, old_id));
     }
 
@@ -88,6 +84,7 @@ impl Node {
             }
             (&mut Node::Null, &Node::Null) => None,
             (&mut Node::Null, _) => Some(Diff::AddChild(i.clone(), b.clone())),
+            (_, &Node::Null) => Some(Diff::RemoveChild(i.clone())),
             _ => Some(Diff::ReplaceChild(i.clone(), b.clone())),
         }
     }
@@ -277,14 +274,14 @@ impl<A> View<A> {
     pub fn new(
         name: String,
         attributes: Attributes,
-        handlers: Vec<(String, (u64, String, HandlerFunction<A>))>,
+        handlers: Vec<(String, (String, HandlerFunction<A>))>,
         children: Vec<Child<A>>,
     ) -> View<A> {
         let mut handler_map = HashMap::new();
         let handlers = handlers
             .into_iter()
-            .map(|(kind, (hash, id, f))| {
-                let handler = (kind, (hash, id.clone()));
+            .map(|(kind, (id, f))| {
+                let handler = (kind, id.clone());
                 handler_map.insert(id, f);
                 handler
             })
@@ -361,20 +358,17 @@ pub trait App: 'static + Clone {
     fn view(state: Self::State) -> View<Self::Action>;
 }
 
-pub fn handler<A, H, F>(hash: H, f: F) -> (u64, String, HandlerFunction<A>)
+pub fn handler<A, F>(f: F) -> (String, HandlerFunction<A>)
 where
-    H: Hash,
     F: Fn(HandlerArg) -> Option<A> + 'static,
 {
-    let mut hasher = DefaultHasher::new();
     let mut rng = OsRng::new().unwrap();
-    hash.hash(&mut hasher);
     let mut bytes = [0; 16];
     rng.fill_bytes(&mut bytes);
 
     let id = Uuid::from_random_bytes(bytes).to_string();
 
-    (hasher.finish(), id, Box::new(f))
+    (id, Box::new(f))
 }
 
 #[derive(Clone)]

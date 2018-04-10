@@ -16,8 +16,8 @@ Crate that providing JSX like macro by `proc_marco` and [pest](https://github.co
 
 ```   
 view! {
-    <button class="clear-completed" onclick={ handler((), move |_| { Some(Action::Submit) }) }>
-        Submit
+    <button class="some-class" onclick={ |_| { Some(Action::Submit) }>
+        Button!
     </button>
 }
 ```
@@ -41,7 +41,7 @@ extern crate stdweb;
 
 use stdweb::traits::*;
 use stdweb::web::document;
-use squark::{handler, App, View, Runtime};
+use squark::{App, Runtime, View};
 use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
 
@@ -58,8 +58,7 @@ impl State {
 
 #[derive(Clone, Debug)]
 enum Action {
-    Increment,
-    Decrement,
+    ChangeCount(isize),
 }
 
 #[derive(Clone, Debug)]
@@ -70,24 +69,22 @@ impl App for CounterApp {
 
     fn reducer(mut state: State, action: Action) -> State {
         match action {
-            Action::Increment => {
-                state.count += 1;
-            }
-            Action::Decrement => {
-                state.count -= 1;
+            Action::ChangeCount(c) => {
+                state.count = c;
             }
         };
         state
     }
 
     fn view(state: State) -> View<Action> {
+        let count = state.count.clone();
         view! {
             <div>
-                { state.count.to_string() }
-                <button onclick={ handler((), |_| Some(Action::Increment)) }>
+                { count.to_string() }
+                <button onclick={ move |_| Some(Action::ChangeCount(count.clone() + 1)) }>
                     increment
                 </button>
-                <button onclick={ handler((), |_| Some(Action::Decrement)) }>
+                <button onclick={ move |_| Some(Action::ChangeCount(count - 1)) }>
                     decrement
                 </button>
             </div>

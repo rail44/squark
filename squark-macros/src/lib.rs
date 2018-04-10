@@ -51,7 +51,7 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
             let (_, k) = k.split_at(2);
             let _k = TokenNode::Literal(Literal::string(k));
             handlers.push(quote! {
-                ($_k.to_string(), $_v),
+                ($_k.to_string(), _squark::handler($_v)),
             });
             continue;
         }
