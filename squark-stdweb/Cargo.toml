@@ -1,6 +1,6 @@
 [package]
 name = "squark-stdweb"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
 license = "WTFPL"
 readme = "README.md"
@@ -12,4 +12,4 @@ description = "Squark runtime implemiontion for web browser with using stdweb"
 stdweb = "0.4.2"
 serde_json = "1.0.13"
 serde = "1.0.34"
-squark = { path = "../squark", version = "0.4.0" }
+squark = { path = "../squark", version = "0.5" }
