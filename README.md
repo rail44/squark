@@ -14,9 +14,9 @@ This repository includes
 * Definition of runtime to handle diffirence of virtual DOM
 * Runtime implementions for several platforms
   + For web browser by using [stdweb](https://github.com/koute/stdweb/).
-  * For web browser by using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)*(working)*
-  + Server side rendering within Rustic world *(working)*
-* Macros like a JSX to help write view
+  * For web browser by using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) *(now working)*
+  + Server side rendering within Rustic world *(now working)*
+* Macros like a JSX to help writing view
 
 ## squark-macros
 
@@ -25,7 +25,7 @@ This repository includes
 
 Crate that providing JSX like macro by `proc_marco` and [pest](https://github.com/pest-parser/pest) parser.  
 
-Note that it depends on Rust `nightly-2017-12-01` because of [language regssion](https://github.com/rust-lang/rust/issues/46489).
+**Note that it depends on Rust `nightly-2017-12-01` because of [language regression](https://github.com/rust-lang/rust/issues/46489).**
 
 ### Syntax
 
