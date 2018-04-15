@@ -18,14 +18,14 @@ This repository includes
   + Server side rendering within Rustic world *(now working)*
 * Macros like a JSX to help writing view
 
+**Currently, we depend on `nightly` channel**
+
 ## squark-macros
 
 [![crates.io](https://img.shields.io/crates/v/squark-macros.svg)](https://crates.io/crates/squark-macros)
 [![docs.rs](https://docs.rs/squark-macros/badge.svg)](https://docs.rs/squark-macros/*/squark_macros/)
 
 Crate that providing JSX like macro by `proc_marco` and [pest](https://github.com/pest-parser/pest) parser.  
-
-**Note that it depends on Rust `nightly-2017-12-01` because of [language regression](https://github.com/rust-lang/rust/issues/46489).**
 
 ### Syntax
 
