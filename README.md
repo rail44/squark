@@ -124,9 +124,9 @@ You can try it with `cargo-web`.
 
 ```sh
 # on ./examples/counter
-cargo install cargo-web
-cargo toolchain install nightly-2017-12-01
-cargo +nightly-2017-12-01 web start --target=wasm32-unknown-unknown
+cargo toolchain install nightly
+cargo +nightly install cargo-web
+cargo +nightly web start --target=wasm32-unknown-unknown
 ```
 
 There is also available TodoMVC example at [examples/todomvc](./examples/todomvc) and working on [https://rail44.github.io/squark/](https://rail44.github.io/squark/).
