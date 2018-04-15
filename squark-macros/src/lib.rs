@@ -5,7 +5,7 @@ extern crate pest;
 extern crate pest_derive;
 extern crate proc_macro;
 
-use proc_macro::{quote, Literal, Term, TokenNode, TokenStream};
+use proc_macro::{quote, Literal, Term, TokenTree, TokenStream, Span, Group};
 use pest::Parser;
 use pest::iterators::{Pair, Pairs};
 use parser::{Parser as ViewParser, Rule};
@@ -18,9 +18,25 @@ mod parser {
     pub struct Parser;
 }
 
+fn into_call_site_span(stream: TokenStream) -> TokenStream {
+    let call_site_span = Span::call_site();
+    let iter = stream.into_iter().map(|mut tree| {
+        match tree {
+            TokenTree::Group(g) => {
+                TokenTree::Group(Group::new(g.delimiter(), into_call_site_span(g.stream())))
+            }
+            _ => {
+                tree.set_span(call_site_span);
+                tree
+            }
+        }
+    });
+    TokenStream::from_iter(iter)
+}
+
 fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
     let name = tag_pairs.next().expect("name").as_str();
-    let _name = TokenNode::Literal(Literal::string(name));
+    let _name = TokenTree::Literal(Literal::string(name));
 
     let mut attributes = vec![];
     let mut handlers = vec![];
@@ -33,15 +49,16 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
 
         let _v = match v.as_rule() {
             Rule::embedded => {
-                let _token = TokenStream::from_str(v.as_str()).unwrap();
-                quote! { $_token.into() }
+                let mut _embedded = TokenStream::from_str(v.as_str()).unwrap();
+                let _embedded = into_call_site_span(_embedded);
+                quote! { $_embedded.into() }
             }
             Rule::string => {
-                let _v = TokenNode::Literal(Literal::string(v.as_str()));
+                let _v = TokenTree::Literal(Literal::string(v.as_str()));
                 quote! { $_v.into() }
             }
             Rule::bool => {
-                let _v = TokenNode::Term(Term::intern(v.as_str()));
+                let _v = TokenTree::Term(Term::new(v.as_str(), Span::def_site()));
                 quote! { $_v.into() }
             }
             _ => unreachable!(),
@@ -49,14 +66,14 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
 
         if k.starts_with("on") {
             let (_, k) = k.split_at(2);
-            let _k = TokenNode::Literal(Literal::string(k));
+            let _k = TokenTree::Literal(Literal::string(k));
             handlers.push(quote! {
                 ($_k.to_string(), _squark::handler($_v)),
             });
             continue;
         }
 
-        let _k = TokenNode::Literal(Literal::string(k));
+        let _k = TokenTree::Literal(Literal::string(k));
         attributes.push(quote! {
             ($_k.to_string(), $_v),
         });
@@ -75,13 +92,13 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
                     }
                 }
                 Rule::text => {
-                    let _text = TokenNode::Literal(Literal::string(p.as_str()));
+                    let _text = TokenTree::Literal(Literal::string(p.as_str()));
                     quote! {
                         $_text.into(),
                     }
                 }
                 Rule::embedded => {
-                    let _embedded = TokenStream::from_str(p.as_str()).unwrap();
+                    let _embedded = into_call_site_span(TokenStream::from_str(p.as_str()).unwrap());
                     quote! {
                         {$_embedded}.into(),
                     }
