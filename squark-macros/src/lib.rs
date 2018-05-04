@@ -1,4 +1,4 @@
-#![feature(proc_macro, proc_macro_derive)]
+#![feature(proc_macro, proc_macro_derive, proc_macro_non_items)]
 
 extern crate pest;
 #[macro_use]
