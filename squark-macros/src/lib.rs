@@ -5,7 +5,7 @@ extern crate pest;
 extern crate pest_derive;
 extern crate proc_macro;
 
-use proc_macro::{quote, Literal, Term, TokenTree, TokenStream, Span, Group};
+use proc_macro::{quote, Literal, TokenTree, TokenStream, Span, Group, Ident};
 use pest::Parser;
 use pest::iterators::{Pair, Pairs};
 use parser::{Parser as ViewParser, Rule};
@@ -58,7 +58,7 @@ fn get_token_stream(mut tag_pairs: Pairs<Rule>) -> TokenStream {
                 quote! { $_v.into() }
             }
             Rule::bool => {
-                let _v = TokenTree::Term(Term::new(v.as_str(), Span::def_site()));
+                let _v = TokenTree::Ident(Ident::new(v.as_str(), Span::def_site()));
                 quote! { $_v.into() }
             }
             _ => unreachable!(),
