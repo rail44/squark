@@ -1,15 +1,15 @@
-#![feature(proc_macro, proc_macro_non_items)]
+#![feature(use_extern_macros, proc_macro_non_items)]
 
 extern crate squark;
 extern crate squark_macros;
 extern crate squark_stdweb;
 extern crate stdweb;
 
+use squark::{App, Runtime, View};
+use squark_macros::view;
+use squark_stdweb::StdwebRuntime;
 use stdweb::traits::*;
 use stdweb::web::document;
-use squark::{App, Runtime, View};
-use squark_stdweb::StdwebRuntime;
-use squark_macros::view;
 
 #[derive(Clone, Debug, PartialEq)]
 struct State {

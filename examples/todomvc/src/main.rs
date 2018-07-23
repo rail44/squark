@@ -1,4 +1,4 @@
-#![feature(proc_macro, proc_macro_non_items)]
+#![feature(use_extern_macros, proc_macro_non_items)]
 
 extern crate rand;
 extern crate serde_json;
@@ -8,15 +8,15 @@ extern crate squark_stdweb;
 extern crate stdweb;
 extern crate uuid;
 
+use rand::{OsRng, RngCore};
+use squark::{App, Child, HandlerArg, Runtime, View};
+use squark_macros::view;
+use squark_stdweb::StdwebRuntime;
 use std::iter::FromIterator;
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web::document;
 use stdweb::web::html_element::InputElement;
-use squark::{App, Child, HandlerArg, Runtime, View};
-use squark_stdweb::StdwebRuntime;
-use squark_macros::view;
-use rand::{OsRng, RngCore};
 use uuid::Uuid;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
