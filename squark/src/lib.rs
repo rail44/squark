@@ -2,12 +2,12 @@ extern crate rand;
 extern crate serde_json;
 extern crate uuid;
 
-use std::fmt::Debug;
+use rand::{OsRng, RngCore};
+use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
+use std::fmt::Debug;
 use std::iter::FromIterator;
 use std::rc::Rc;
-use std::cell::{Cell, RefCell};
-use rand::{OsRng, RngCore};
 use uuid::Uuid;
 
 pub use serde_json::Value as HandlerArg;
@@ -46,9 +46,7 @@ fn diff_handlers(a: &mut Handlers, b: &Handlers) -> Vec<Diff> {
     let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
     for &(ref new_key, ref new_id) in b {
         match old_map.remove(new_key) {
-            Some(_) => {
-                result.push(Diff::SetHandler(new_key.clone(), new_id.clone()))
-            }
+            Some(_) => result.push(Diff::SetHandler(new_key.clone(), new_id.clone())),
             None => result.push(Diff::SetHandler(new_key.clone(), new_id.clone())),
         }
     }
@@ -104,7 +102,8 @@ fn get_nodelist_key_set(nodelist: &Vec<Node>) -> HashSet<String> {
 fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
     let mut result = vec![];
     let b_key_set = get_nodelist_key_set(b);
-    let survived = a.drain(..)
+    let survived = a
+        .drain(..)
         .filter(|c| match c.get_key() {
             Some(k) => {
                 let is_survived = b_key_set.contains(&k);

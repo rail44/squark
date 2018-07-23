@@ -4,19 +4,20 @@ extern crate squark;
 #[macro_use]
 extern crate stdweb;
 
-use std::collections::{BTreeMap, HashMap};
-use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::Bound::{Excluded, Included};
+use std::collections::{BTreeMap, HashMap};
+use std::rc::Rc;
 
 use squark::{App, AttributeValue, Diff, Element, Env, HandlerArg, Node, Runtime};
 use stdweb::traits::*;
 use stdweb::unstable::TryFrom;
 use stdweb::web;
-use stdweb::web::{document, window, EventListenerHandle};
+use stdweb::web::event::{
+    BlurEvent, ChangeEvent, ClickEvent, ConcreteEvent, DoubleClickEvent, InputEvent, KeyDownEvent,
+};
 use stdweb::web::html_element::InputElement;
-use stdweb::web::event::{BlurEvent, ChangeEvent, ClickEvent, ConcreteEvent, DoubleClickEvent,
-                         InputEvent, KeyDownEvent};
+use stdweb::web::{document, window, EventListenerHandle};
 
 type Position = Vec<usize>;
 type AttachedMadp = BTreeMap<Position, HashMap<String, EventListenerHandle>>;
@@ -141,7 +142,8 @@ impl<A: App> StdwebRuntime<A> {
             Diff::RemoveChild(i) => self.remove_child(el, i, pos),
             Diff::SetHandler(name, id) => self.set_handler(el, &name, &id, pos),
             Diff::RemoveHandler(name, _) => {
-                let attached = self.attached_map
+                let attached = self
+                    .attached_map
                     .borrow_mut()
                     .get_mut(pos)
                     .and_then(|m| m.remove(&name));
@@ -221,7 +223,8 @@ impl<A: App> StdwebRuntime<A> {
 
     fn remove_attached(&self, pos: &Position) {
         let mut max = pos.clone();
-        let i = max.pop()
+        let i = max
+            .pop()
             .expect("Failed to pop index from posion to use max range") + 1;
         max.push(i);
         let range = (Included(pos.clone()), Excluded(max));
@@ -256,7 +259,8 @@ impl<A: App> StdwebRuntime<A> {
             "input" => self._set_handler::<InputEvent>(&el, id),
             "keydown" => self._set_handler::<KeyDownEvent>(&el, id),
             "render" => {
-                let handler = self.pop_handler(&id)
+                let handler = self
+                    .pop_handler(&id)
                     .expect("Could not find handler by given id");
                 window().request_animation_frame(move |_| {
                     handler(json!{null});
@@ -282,7 +286,8 @@ impl<A: App> StdwebRuntime<A> {
         el: &web::Element,
         id: &str,
     ) -> EventListenerHandle {
-        let handler = self.pop_handler(id)
+        let handler = self
+            .pop_handler(id)
             .expect("Could not find handler by given id");
         el.clone().add_event_listener(move |e: E| {
             e.stop_propagation();
