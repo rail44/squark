@@ -1,10 +1,10 @@
-#![feature(test, proc_macro)]
+#![feature(test, use_extern_macros, proc_macro_non_items)]
 
 extern crate squark;
 extern crate squark_macros;
 
+use squark::View;
 use squark_macros::view;
-use squark::{handler, View};
 
 fn v() -> View<()> {
     let not_completed_count = 1234;
@@ -19,7 +19,7 @@ fn v() -> View<()> {
             {
                 if has_completed {
                     view! {
-                        <button class="clear-completed" onclick={ handler((), move |_| { Some(()) }) } />
+                        <button class="clear-completed" onclick={ move |_| { Some(()) } } />
                     }
                 } else {
                     ().into()
@@ -32,5 +32,4 @@ fn v() -> View<()> {
 #[test]
 fn it_works() {
     let v = v();
-    println!("{:?}", v.node);
 }
