@@ -12,9 +12,9 @@ use uuid::Uuid;
 
 pub use serde_json::Value as HandlerArg;
 
-type Attributes = Vec<(String, AttributeValue)>;
+type Attribute = (String, AttributeValue);
 
-fn diff_attributes(a: &mut Attributes, b: &Attributes) -> Vec<Diff> {
+fn diff_attributes(a: &mut Vec<Attribute>, b: &[Attribute]) -> Vec<Diff> {
     let mut result = vec![];
 
     let mut old_map = HashMap::<String, AttributeValue>::from_iter(a.drain(..));
@@ -38,9 +38,8 @@ fn diff_attributes(a: &mut Attributes, b: &Attributes) -> Vec<Diff> {
 
 type HandlerFunction<A> = Box<Fn(HandlerArg) -> Option<A>>;
 type Handler = (String, String);
-type Handlers = Vec<Handler>;
 
-fn diff_handlers(a: &mut Handlers, b: &Handlers) -> Vec<Diff> {
+fn diff_handlers(a: &mut Vec<Handler>, b: &[Handler]) -> Vec<Diff> {
     let mut result = vec![];
 
     let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
@@ -69,7 +68,7 @@ impl Node {
     fn diff(a: &mut Node, b: &Node, i: &mut usize) -> Option<Diff> {
         match (a, b) {
             (&mut Node::Element(ref mut a), &Node::Element(ref b)) => {
-                match Element::diff(a, b, i) {
+                match Element::diff(a, b, *i) {
                     Some(diff) => Some(diff),
                     None => None,
                 }
@@ -78,28 +77,28 @@ impl Node {
                 if text_a == text_b {
                     return None;
                 }
-                Some(Diff::ReplaceChild(i.clone(), b.clone()))
+                Some(Diff::ReplaceChild(*i, b.clone()))
             }
             (&mut Node::Null, &Node::Null) => None,
-            (&mut Node::Null, _) => Some(Diff::AddChild(i.clone(), b.clone())),
-            (_, &Node::Null) => Some(Diff::RemoveChild(i.clone())),
-            _ => Some(Diff::ReplaceChild(i.clone(), b.clone())),
+            (&mut Node::Null, _) => Some(Diff::AddChild(*i, b.clone())),
+            (_, &Node::Null) => Some(Diff::RemoveChild(*i)),
+            _ => Some(Diff::ReplaceChild(*i, b.clone())),
         }
     }
 
     fn get_key(&self) -> Option<String> {
         match self {
-            &Node::Element(ref el) => el.get_key(),
+            Node::Element(ref el) => el.get_key(),
             _ => None,
         }
     }
 }
 
-fn get_nodelist_key_set(nodelist: &Vec<Node>) -> HashSet<String> {
+fn get_nodelist_key_set(nodelist: &[Node]) -> HashSet<String> {
     HashSet::from_iter(nodelist.iter().filter_map(|c| c.get_key()))
 }
 
-fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
+fn diff_children(a: &mut Vec<Node>, b: &[Node], i: &mut usize) -> Vec<Diff> {
     let mut result = vec![];
     let b_key_set = get_nodelist_key_set(b);
     let survived = a
@@ -108,7 +107,7 @@ fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
             Some(k) => {
                 let is_survived = b_key_set.contains(&k);
                 if !is_survived {
-                    result.push(Diff::RemoveChild(i.clone()));
+                    result.push(Diff::RemoveChild(*i));
                     return false;
                 }
                 *i += 1;
@@ -149,16 +148,16 @@ fn diff_children(a: &mut Vec<Node>, b: &Vec<Node>, i: &mut usize) -> Vec<Diff> {
 #[derive(Clone, Debug)]
 pub struct Element {
     pub name: String,
-    pub attributes: Attributes,
-    pub handlers: Handlers,
+    pub attributes: Vec<Attribute>,
+    pub handlers: Vec<Handler>,
     pub children: Vec<Node>,
 }
 
 impl Element {
     fn new(
         name: String,
-        attributes: Attributes,
-        handlers: Handlers,
+        attributes: Vec<Attribute>,
+        handlers: Vec<Handler>,
         children: Vec<Node>,
     ) -> Element {
         Element {
@@ -169,15 +168,15 @@ impl Element {
         }
     }
 
-    fn diff(a: &mut Element, b: &Element, i: &usize) -> Option<Diff> {
+    fn diff(a: &mut Element, b: &Element, i: usize) -> Option<Diff> {
         if let (Some(a_key), Some(b_key)) = (a.get_key(), b.get_key()) {
             if a_key != b_key {
-                return Some(Diff::ReplaceChild(i.clone(), Node::Element(b.clone())));
+                return Some(Diff::ReplaceChild(i, Node::Element(b.clone())));
             }
         }
 
         if a.name != b.name {
-            return Some(Diff::ReplaceChild(i.clone(), Node::Element(b.clone())));
+            return Some(Diff::ReplaceChild(i, Node::Element(b.clone())));
         }
 
         let mut result = vec![];
@@ -189,7 +188,7 @@ impl Element {
         if result.is_empty() {
             return None;
         }
-        Some(Diff::PatchChild(i.clone(), result))
+        Some(Diff::PatchChild(i, result))
     }
 
     fn get_key(&self) -> Option<String> {
@@ -197,8 +196,8 @@ impl Element {
             .iter()
             .find(|&&(ref k, _)| k == "key")
             .and_then(|&(_, ref v)| match v {
-                &AttributeValue::String(ref s) => Some(s.clone()),
-                &AttributeValue::Bool(_) => None,
+                AttributeValue::String(ref s) => Some(s.clone()),
+                AttributeValue::Bool(_) => None,
             })
     }
 }
@@ -272,7 +271,7 @@ impl<A> FromIterator<View<A>> for Child<A> {
 impl<A> View<A> {
     pub fn new(
         name: String,
-        attributes: Attributes,
+        attributes: Vec<Attribute>,
         handlers: Vec<(String, (String, HandlerFunction<A>))>,
         children: Vec<Child<A>>,
     ) -> View<A> {
@@ -287,7 +286,7 @@ impl<A> View<A> {
             .collect();
 
         let mut children_vec = vec![];
-        for child in children.into_iter() {
+        for child in children {
             match child {
                 Child::View(v) => {
                     handler_map.extend(v.handler_map);
@@ -344,7 +343,7 @@ where
     T: Into<View<A>>,
 {
     fn from(option: Option<T>) -> View<A> {
-        option.map_or_else(|| View::null(), |v| v.into())
+        option.map_or_else(View::null, |v| v.into())
     }
 }
 
