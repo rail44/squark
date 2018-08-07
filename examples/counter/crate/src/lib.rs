@@ -1,15 +1,14 @@
-#![feature(use_extern_macros, proc_macro_non_items)]
+#![feature(proc_macro_non_items)]
 
 extern crate squark;
 extern crate squark_macros;
-extern crate squark_stdweb;
-extern crate stdweb;
+extern crate squark_web;
+extern crate wasm_bindgen;
 
 use squark::{App, Runtime, View};
 use squark_macros::view;
-use squark_stdweb::StdwebRuntime;
-use stdweb::traits::*;
-use stdweb::web::document;
+use squark_web::WebRuntime;
+use wasm_bindgen::prelude::*;
 
 #[derive(Clone, Debug, PartialEq)]
 struct State {
@@ -58,11 +57,10 @@ impl App for CounterApp {
     }
 }
 
-fn main() {
-    stdweb::initialize();
-    StdwebRuntime::<CounterApp>::new(
-        document().query_selector("body").unwrap().unwrap(),
+#[wasm_bindgen]
+pub fn run() {
+    WebRuntime::<CounterApp>::new(
+        squark_web::web::document.query_selector("body"),
         State::new(),
     ).run();
-    stdweb::event_loop();
 }

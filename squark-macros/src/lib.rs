@@ -1,5 +1,5 @@
 #![crate_type = "proc-macro"]
-#![feature(use_extern_macros, proc_macro_non_items, proc_macro_quote)]
+#![feature(proc_macro_non_items, proc_macro_quote)]
 
 extern crate pest;
 #[macro_use]
