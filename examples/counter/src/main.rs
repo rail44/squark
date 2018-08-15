@@ -43,7 +43,7 @@ impl App for CounterApp {
     }
 
     fn view(state: State) -> View<Action> {
-        let count = state.count.clone();
+        let count = state.count;
         view! {
             <div>
                 { count.to_string() }

@@ -29,9 +29,9 @@ enum Visibility {
 impl ToString for Visibility {
     fn to_string(&self) -> String {
         match self {
-            &Visibility::All => "All".to_string(),
-            &Visibility::Active => "Active".to_string(),
-            &Visibility::Completed => "Completed".to_string(),
+            Visibility::All => "All".to_string(),
+            Visibility::Active => "Active".to_string(),
+            Visibility::Completed => "Completed".to_string(),
         }
     }
 }
@@ -73,9 +73,9 @@ impl Entry {
 
     pub fn should_display(&self, visibility: &Visibility) -> bool {
         match visibility {
-            &Visibility::All => true,
-            &Visibility::Active => !self.completed,
-            &Visibility::Completed => self.completed,
+            Visibility::All => true,
+            Visibility::Active => !self.completed,
+            Visibility::Completed => self.completed,
         }
     }
 
