@@ -13,8 +13,7 @@ This repository includes
 * Definition of application inspired from [HyperApp](https://github.com/hyperapp/hyperapp/)
 * Definition of runtime to handle diffirence of virtual DOM
 * Runtime implementions for several platforms
-  + For web browser by using [stdweb](https://github.com/koute/stdweb/).
-  * For web browser by using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen) *(now working)*
+  * For web browser by using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)
   + Server side rendering within Rustic world *(now working)*
 * Macros like a JSX to help writing view
 
@@ -39,28 +38,27 @@ view! {
 
 We can generate native Rust expression at compile-time.
 
-## squark-stdweb
+## squark-web
 
-[![crates.io](https://img.shields.io/crates/v/squark-stdweb.svg)](https://crates.io/crates/squark-stdweb)
-[![docs.rs](https://docs.rs/squark-stdweb/badge.svg)](https://docs.rs/squark-stdweb/*/squark_stdweb/)
+[![crates.io](https://img.shields.io/crates/v/squark-web.svg)](https://crates.io/crates/squark-web)
+[![docs.rs](https://docs.rs/squark-web/badge.svg)](https://docs.rs/squark-web/*/squark_web/)
 
-Runtime implemention for web browser with usinng [stdweb](https://github.com/koute/stdweb/).
+Runtime implemention for web browser with usinng [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen/).
 
 Here is full example of counter app!
 
 ```rust
-#![feature(proc_macro)]
+#![feature(proc_macro_non_items)]
 
 extern crate squark;
 extern crate squark_macros;
-extern crate squark_stdweb;
-extern crate stdweb;
+extern crate squark_web;
+extern crate wasm_bindgen;
 
-use stdweb::traits::*;
-use stdweb::web::document;
 use squark::{App, Runtime, View};
-use squark_stdweb::StdwebRuntime;
 use squark_macros::view;
+use squark_web::WebRuntime;
+use wasm_bindgen::prelude::*;
 
 #[derive(Clone, Debug, PartialEq)]
 struct State {
@@ -94,7 +92,7 @@ impl App for CounterApp {
     }
 
     fn view(state: State) -> View<Action> {
-        let count = state.count.clone();
+        let count = state.count;
         view! {
             <div>
                 { count.to_string() }
@@ -109,24 +107,15 @@ impl App for CounterApp {
     }
 }
 
-fn main() {
-    stdweb::initialize();
-    StdwebRuntime::<CounterApp>::new(
-        document().query_selector("body").unwrap().unwrap(),
+#[wasm_bindgen]
+pub fn run() {
+    WebRuntime::<CounterApp>::new(
+        squark_web::web::document.query_selector("body"),
         State::new(),
     ).run();
-    stdweb::event_loop();
 }
 ```
 
 Project dir is located at [examples/counter](./examples/counter).
-You can try it with `cargo-web`.
-
-```sh
-# on ./examples/counter
-cargo toolchain install nightly
-cargo +nightly install cargo-web
-cargo +nightly web start --target=wasm32-unknown-unknown
-```
 
 There is also available TodoMVC example at [examples/todomvc](./examples/todomvc) and working on [https://rail44.github.io/squark/](https://rail44.github.io/squark/).

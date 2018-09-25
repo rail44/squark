@@ -2,7 +2,8 @@ extern crate rand;
 extern crate serde_json;
 extern crate uuid;
 
-use rand::{OsRng, RngCore};
+use rand::RngCore;
+use rand::rngs::OsRng;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
@@ -44,10 +45,8 @@ fn diff_handlers(a: &mut Vec<Handler>, b: &[Handler]) -> Vec<Diff> {
 
     let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
     for &(ref new_key, ref new_id) in b {
-        match old_map.remove(new_key) {
-            Some(_) => result.push(Diff::SetHandler(new_key.clone(), new_id.clone())),
-            None => result.push(Diff::SetHandler(new_key.clone(), new_id.clone())),
-        }
+        old_map.remove(new_key);
+        result.push(Diff::SetHandler(new_key.clone(), new_id.clone()));
     }
 
     for (old_key, old_id) in old_map.drain() {
@@ -131,7 +130,10 @@ fn diff_children(a: &mut Vec<Node>, b: &[Node], i: &mut usize) -> Vec<Diff> {
             }
             Some(mut old_child) => {
                 if let Some(diff) = Node::diff(&mut old_child, new_child, &mut i) {
-                    result.push(diff);
+                    result.push(diff.clone());
+                    if let Diff::RemoveChild(_) = diff {
+                        continue;
+                    }
                 }
             }
         }
@@ -202,7 +204,7 @@ impl Element {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Diff {
     SetAttribute(String, AttributeValue),
     RemoveAttribute(String),
@@ -360,13 +362,7 @@ pub fn handler<A, F>(f: F) -> (String, HandlerFunction<A>)
 where
     F: Fn(HandlerArg) -> Option<A> + 'static,
 {
-    let mut rng = OsRng::new().unwrap();
-    let mut bytes = [0; 16];
-    rng.fill_bytes(&mut bytes);
-
-    let id = Uuid::from_random_bytes(bytes).to_string();
-
-    (id, Box::new(f))
+    (uuid(), Box::new(f))
 }
 
 #[derive(Clone)]
@@ -453,4 +449,11 @@ pub trait Runtime<A: App>: Clone + 'static {
         };
         Some(Box::new(f))
     }
+}
+
+pub fn uuid() -> String {
+    let mut rng = OsRng::new().unwrap();
+    let mut bytes = [0; 16];
+    rng.fill_bytes(&mut bytes);
+    Uuid::from_random_bytes(bytes).to_string()
 }

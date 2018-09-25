@@ -1,23 +1,16 @@
-#![feature(use_extern_macros, proc_macro_non_items)]
+#![feature(proc_macro_non_items)]
 
-extern crate rand;
 extern crate serde_json;
 extern crate squark;
 extern crate squark_macros;
-extern crate squark_stdweb;
-extern crate stdweb;
-extern crate uuid;
+extern crate squark_web;
+extern crate wasm_bindgen;
 
-use rand::{OsRng, RngCore};
-use squark::{App, Child, HandlerArg, Runtime, View};
+use squark::{App, Child, HandlerArg, Runtime, View, uuid};
 use squark_macros::view;
-use squark_stdweb::StdwebRuntime;
+use squark_web::WebRuntime;
 use std::iter::FromIterator;
-use stdweb::traits::*;
-use stdweb::unstable::TryFrom;
-use stdweb::web::document;
-use stdweb::web::html_element::InputElement;
-use uuid::Uuid;
+use wasm_bindgen::prelude::*;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
 enum Visibility {
@@ -59,13 +52,8 @@ struct Entry {
 
 impl Entry {
     pub fn new(description: String) -> Entry {
-        let mut rng = OsRng::new().unwrap();
-        let mut bytes = [0; 16];
-        rng.fill_bytes(&mut bytes);
-        let id = Uuid::from_random_bytes(bytes).to_string();
-
         Entry {
-            id,
+            id: uuid(),
             description,
             completed: false,
         }
@@ -110,13 +98,7 @@ impl Entry {
                                     }
                                     _ => None,
                                 } }
-                                onblur={ move |_| Some(Action::EndEditing) }
-                                onrender={ move |_| {
-                                    InputElement::try_from(
-                                        document().get_element_by_id(id.as_str()).unwrap()
-                                    ).unwrap().focus();
-                                    None
-                                } } />
+                                onblur={ move |_| Some(Action::EndEditing) } />
                         }
                     } else {
                         view! {
@@ -357,11 +339,10 @@ impl App for TodoApp {
     }
 }
 
-fn main() {
-    stdweb::initialize();
-    StdwebRuntime::<TodoApp>::new(
-        document().query_selector("#container").unwrap().unwrap(),
+#[wasm_bindgen]
+pub fn run() {
+    WebRuntime::<TodoApp>::new(
+        squark_web::web::document.query_selector("#container"),
         State::new(),
     ).run();
-    stdweb::event_loop();
 }

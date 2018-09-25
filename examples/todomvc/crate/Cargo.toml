@@ -1,0 +1,16 @@
+[package]
+name = "todomvc"
+version = "0.1.0"
+authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[workspace]
+
+[dependencies]
+squark = { "path" = "../../../squark" }
+squark-macros = { "path" = "../../../squark-macros" }
+squark-web = { "path" = "../../../squark-web" }
+serde_json = "1.0.13"
+wasm-bindgen = "0.2.19"
