@@ -2,14 +2,17 @@ extern crate rand;
 extern crate serde_json;
 extern crate uuid;
 
-use rand::RngCore;
-use rand::rngs::OsRng;
+use rand::prelude::*;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::iter::FromIterator;
 use std::rc::Rc;
 use uuid::Uuid;
+
+thread_local! {
+    static RNG: RefCell<SmallRng> = RefCell::new(SmallRng::from_entropy());
+}
 
 pub use serde_json::Value as HandlerArg;
 
@@ -452,8 +455,7 @@ pub trait Runtime<A: App>: Clone + 'static {
 }
 
 pub fn uuid() -> String {
-    let mut rng = OsRng::new().unwrap();
-    let mut bytes = [0; 16];
-    rng.fill_bytes(&mut bytes);
-    Uuid::from_random_bytes(bytes).to_string()
+    RNG.with(|rng| {
+        Uuid::from_random_bytes(rng.borrow_mut().gen())
+    }).to_string()
 }
