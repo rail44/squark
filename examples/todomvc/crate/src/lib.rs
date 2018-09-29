@@ -280,7 +280,7 @@ impl App for TodoApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(mut state: State, action: Action) -> State {
+    fn reducer(&self, mut state: State, action: Action) -> State {
         match action {
             Action::Add => {
                 if state.field.as_str() != "" {
@@ -328,7 +328,7 @@ impl App for TodoApp {
         state
     }
 
-    fn view(state: State) -> View<Action> {
+    fn view(&self, state: State) -> View<Action> {
         view! {
             <div>
                 { header_view(&state) }
@@ -336,6 +336,12 @@ impl App for TodoApp {
                 { footer_view(&state) }
             </div>
         }
+    }
+}
+
+impl Default for TodoApp {
+    fn default() -> TodoApp {
+        TodoApp
     }
 }
 

@@ -32,7 +32,7 @@ impl App for CounterApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(mut state: State, action: Action) -> State {
+    fn reducer(&self, mut state: State, action: Action) -> State {
         match action {
             Action::ChangeCount(c) => {
                 state.count = c;
@@ -41,7 +41,7 @@ impl App for CounterApp {
         state
     }
 
-    fn view(state: State) -> View<Action> {
+    fn view(&self, state: State) -> View<Action> {
         let count = state.count;
         view! {
             <div>
@@ -54,6 +54,12 @@ impl App for CounterApp {
                 </button>
             </div>
         }
+    }
+}
+
+impl Default for CounterApp {
+    fn default() -> CounterApp {
+        CounterApp
     }
 }
 

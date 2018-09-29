@@ -2,14 +2,17 @@ extern crate rand;
 extern crate serde_json;
 extern crate uuid;
 
-use rand::RngCore;
-use rand::rngs::OsRng;
+use rand::prelude::*;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::iter::FromIterator;
 use std::rc::Rc;
 use uuid::Uuid;
+
+thread_local! {
+    static RNG: RefCell<SmallRng> = RefCell::new(SmallRng::from_entropy());
+}
 
 pub use serde_json::Value as HandlerArg;
 
@@ -349,13 +352,13 @@ where
     }
 }
 
-pub trait App: 'static + Clone {
+pub trait App: 'static + Clone + Default {
     type State: Clone + Debug + PartialEq + 'static;
     type Action: Clone + Debug + 'static;
 
-    fn reducer(state: Self::State, action: Self::Action) -> Self::State;
+    fn reducer(&self, state: Self::State, action: Self::Action) -> Self::State;
 
-    fn view(state: Self::State) -> View<Self::Action>;
+    fn view(&self, state: Self::State) -> View<Self::Action>;
 }
 
 pub fn handler<A, F>(f: F) -> (String, HandlerFunction<A>)
@@ -367,6 +370,7 @@ where
 
 #[derive(Clone)]
 pub struct Env<A: App> {
+    app: A,
     state: Rc<RefCell<A::State>>,
     node: Rc<RefCell<Node>>,
     handler_map: Rc<RefCell<HandlerMap<A::Action>>>,
@@ -376,6 +380,7 @@ pub struct Env<A: App> {
 impl<A: App> Env<A> {
     pub fn new(state: A::State) -> Env<A> {
         Env {
+            app: A::default(),
             state: Rc::new(RefCell::new(state)),
             node: Rc::new(RefCell::new(Node::Null)),
             handler_map: Rc::new(RefCell::new(HashMap::new())),
@@ -415,7 +420,7 @@ pub trait Runtime<A: App>: Clone + 'static {
         let env = self.get_env();
         env.scheduled.set(false);
         let mut old_node = env.get_node();
-        let view = A::view(env.get_state());
+        let view = env.app.view(env.get_state());
         *env.handler_map.borrow_mut() = view.handler_map;
         if let Some(diff) = Node::diff(&mut old_node, &view.node, &mut 0) {
             env.set_node(view.node);
@@ -424,7 +429,9 @@ pub trait Runtime<A: App>: Clone + 'static {
     }
 
     fn pop_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg)>> {
-        let handler = self.get_env().pop_handler(id)?;
+        let env = self.get_env();
+        let handler = env.pop_handler(id)?;
+        let app = env.app.clone();
 
         let this = self.clone();
         let f = move |arg: HandlerArg| {
@@ -436,7 +443,7 @@ pub trait Runtime<A: App>: Clone + 'static {
             let env = this.get_env();
 
             let old_state = env.get_state();
-            let new_state = A::reducer(old_state.clone(), action);
+            let new_state = app.reducer(old_state.clone(), action);
             if old_state == new_state {
                 return;
             }
@@ -452,8 +459,7 @@ pub trait Runtime<A: App>: Clone + 'static {
 }
 
 pub fn uuid() -> String {
-    let mut rng = OsRng::new().unwrap();
-    let mut bytes = [0; 16];
-    rng.fill_bytes(&mut bytes);
-    Uuid::from_random_bytes(bytes).to_string()
+    RNG.with(|rng| {
+        Uuid::from_random_bytes(rng.borrow_mut().gen())
+    }).to_string()
 }
