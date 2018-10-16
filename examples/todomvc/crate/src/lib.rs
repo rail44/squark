@@ -5,12 +5,16 @@ extern crate squark;
 extern crate squark_macros;
 extern crate squark_web;
 extern crate wasm_bindgen;
+extern crate web_sys;
+extern crate console_error_panic_hook;
 
+use std::panic;
 use squark::{uuid, App, Child, HandlerArg, Runtime, View};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use std::iter::FromIterator;
 use wasm_bindgen::prelude::*;
+use web_sys::window;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
 enum Visibility {
@@ -349,8 +353,15 @@ impl Default for TodoApp {
 
 #[wasm_bindgen]
 pub fn run() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
     WebRuntime::<TodoApp>::new(
-        squark_web::web::document.query_selector("#container"),
+        window()
+            .expect("Failed to get window")
+            .document()
+            .expect("Failed to get document")
+            .query_selector("#container")
+            .expect("Failed to query")
+            .expect("Unable to find #container"),
         State::new(),
     )
     .run();

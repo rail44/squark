@@ -16,3 +16,22 @@ serde = "1.0.34"
 squark = { path = "../squark", version = "0.6.0" }
 wasm-bindgen = { version = "0.2.19", features = [ "nightly", "serde-serialize" ] }
 js-sys = "0.3.2"
+
+[dependencies.web-sys]
+version = "0.3.2"
+features = [
+  'console',
+  'Window',
+  'Document',
+  'DomStringMap',
+  'Element',
+  'EventTarget',
+  'HtmlElement',
+  'HtmlInputElement',
+  'Node',
+  'NodeList',
+  'Text',
+  'Event',
+  'InputEvent',
+  'KeyboardEvent',
+]

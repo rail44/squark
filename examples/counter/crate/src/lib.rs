@@ -4,11 +4,15 @@ extern crate squark;
 extern crate squark_macros;
 extern crate squark_web;
 extern crate wasm_bindgen;
+extern crate web_sys;
+extern crate console_error_panic_hook;
 
+use std::panic;
 use squark::{App, Runtime, View};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use wasm_bindgen::prelude::*;
+use web_sys::window;
 
 #[derive(Clone, Debug, PartialEq)]
 struct State {
@@ -65,8 +69,15 @@ impl Default for CounterApp {
 
 #[wasm_bindgen]
 pub fn run() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
     WebRuntime::<CounterApp>::new(
-        squark_web::web::document.query_selector("body"),
+        window()
+            .expect("Failed to get window")
+            .document()
+            .expect("Failed to get document")
+            .query_selector("body")
+            .expect("Failed to query")
+            .expect("Unable to find body"),
         State::new(),
     )
     .run();
