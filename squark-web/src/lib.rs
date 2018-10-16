@@ -194,17 +194,17 @@ impl<A: App> WebRuntime<A> {
         parent.replace_child(&node, &current);
     }
 
-    fn create_element(&self, el: Element) -> web::HTMLElement {
-        let web_el = web::document.create_element(el.name.as_str());
-        for (ref name, ref value) in &el.attributes {
+    fn create_element(&self, el: &Element) -> web::HTMLElement {
+        let web_el = web::document.create_element(el.name());
+        for (ref name, ref value) in el.attributes() {
             set_attribute(&web_el, name, value);
         }
 
-        for (ref name, id) in &el.handlers {
+        for (ref name, id) in el.handlers() {
             self.set_handler(&web_el, name, &id);
         }
 
-        for child in el.children {
+        for child in el.children() {
             match child {
                 Node::Element(el) => {
                     let child = self.create_element(el);
@@ -224,7 +224,7 @@ impl<A: App> WebRuntime<A> {
     fn add_child(&self, parent: &web::HTMLElement, i: usize, node: Node) {
         match node {
             Node::Element(el) => {
-                let child = self.create_element(el);
+                let child = self.create_element(&el);
                 insert_at(parent, i, &child);
             }
             Node::Text(s) => {
@@ -238,7 +238,7 @@ impl<A: App> WebRuntime<A> {
     fn replace_child(&self, parent: &web::HTMLElement, i: usize, node: Node) {
         match node {
             Node::Element(el) => {
-                let child = self.create_element(el);
+                let child = self.create_element(&el);
                 self.replace_at(parent, i, &child);
             }
             Node::Text(s) => {

@@ -16,3 +16,4 @@ serde = "1.0.34"
 squark = { path = "../squark", version = "0.5" }
 wasm-bindgen = { version = "0.2.19", features = [ "nightly", "serde-serialize" ] }
 js-sys = "0.2.4"
+web-sys = "0.3.2"

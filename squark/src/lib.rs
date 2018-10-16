@@ -152,10 +152,10 @@ fn diff_children(a: &mut Vec<Node>, b: &[Node], i: &mut usize) -> Vec<Diff> {
 
 #[derive(Clone, Debug)]
 pub struct Element {
-    pub name: String,
-    pub attributes: Vec<Attribute>,
-    pub handlers: Vec<Handler>,
-    pub children: Vec<Node>,
+    name: String,
+    attributes: Vec<Attribute>,
+    handlers: Vec<Handler>,
+    children: Vec<Node>,
 }
 
 impl Element {
@@ -171,6 +171,22 @@ impl Element {
             handlers,
             children,
         }
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn attributes(&self) -> &[Attribute] {
+        &self.attributes
+    }
+
+    pub fn handlers(&self) -> &[Handler] {
+        &self.handlers
+    }
+
+    pub fn children(&self) -> &[Node] {
+        &self.children
     }
 
     fn diff(a: &mut Element, b: &Element, i: usize) -> Option<Diff> {
