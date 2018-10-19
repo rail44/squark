@@ -145,11 +145,11 @@ fn insert_at(parent: &web::HTMLElement, i: usize, node: &web::HTMLElement) {
 fn set_attribute(el: &web::HTMLElement, name: &str, value: &AttributeValue) {
     match value {
         AttributeValue::Bool(b) => {
-            js_sys::Reflect::set(&el.into(), &name.into(), &(*b).into());
+            js_sys::Reflect::set(&el.into(), &name.into(), &(*b).into()).expect("Failed to set bool attribute");
             el.set_attribute(name, &b.to_string());
         }
         AttributeValue::String(s) => {
-            js_sys::Reflect::set(&el.into(), &name.into(), &s.into());
+            js_sys::Reflect::set(&el.into(), &name.into(), &s.into()).expect("Failed to set string attribute");
             el.set_attribute(name, s);
         }
     }
@@ -260,7 +260,7 @@ impl<A: App> WebRuntime<A> {
     }
 
     fn set_handler(&self, el: &web::HTMLElement, name: &str, id: &str) {
-        js_sys::Reflect::set(&el.dataset().into(), &"hasHandler".into(), &"".into());
+        js_sys::Reflect::set(&el.dataset().into(), &"hasHandler".into(), &"".into()).expect("Failed to set hasHandler attribute");
         let closure = match name {
             "keydown" => self._set_handler::<web::KeyboardEvent>(&el, "keydown", id),
             "input" => self._set_handler::<web::InputEvent>(&el, "input", id),
