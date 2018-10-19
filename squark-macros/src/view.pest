@@ -1,6 +1,6 @@
-view = _{ soi ~ tag ~ eoi }
+view = _{ SOI ~ tag ~ EOI }
 
-identifier = { ('a'..'z' | 'A'..'Z' | '0'..'9' | "_" | "-")+ }
+identifier = _{ ('a'..'z' | 'A'..'Z' | '0'..'9' | "_" | "-")+ }
 
 tag_name = @{ identifier }
 tag = { single_tag | pair_tag }
@@ -10,8 +10,8 @@ single_tag = _{ "<" ~ tag_name ~ attributes ~ "/" ~ ">" }
 
 children = {(tag | embedded_outer | text)*}
 
-open_tag = _{ "<" ~ push(tag_name) ~ attributes ~ ">" }
-close_tag = _{ "<" ~ "/" ~ pop ~ ">" }
+open_tag = _{ "<" ~ tag_name ~ attributes ~ ">" }
+close_tag = _{ "<" ~ "/" ~ (!">" ~ ANY)+ ~ ">" }
 
 attributes = { attribute* }
 attribute = _{ key ~ "=" ~ (string_literal | bool | embedded_outer) }
@@ -19,16 +19,16 @@ attribute = _{ key ~ "=" ~ (string_literal | bool | embedded_outer) }
 key = @{ identifier }
 
 string_literal = _{ "\"" ~ string ~ "\"" }
-string = @{ (!"\"" ~ any)* }
+string = @{ (!"\"" ~ ANY)* }
 
 embedded_outer = _{ "{" ~ embedded ~ "}" }
-embedded = { (bracketed | (!"}" ~ any))* }
+embedded = { (bracketed | (!"}" ~ ANY))* }
 bracketed = _{ "{" ~ bracketed_inner ~ "}" }
-bracketed_inner = _{ (bracketed | (!"}" ~ any))* }
+bracketed_inner = _{ (bracketed | (!"}" ~ ANY))* }
 
 bool = { "true" | "false" }
 
-text = @{ (!("<" | "{") ~ any)+ }
+text = @{ (!("<" | "{") ~ ANY)+ }
 
 newline    = _{ "\n" | "\r\n" }
-whitespace = _{ " " | newline }
+WHITESPACE = _{ " " | newline }
