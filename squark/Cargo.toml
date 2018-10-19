@@ -12,5 +12,5 @@ description = "Virtual DOM implemention and application definition inspired from
 
 [dependencies]
 uuid = "0.6.2"
-rand = { git = "https://github.com/rust-random/rand.git", features = ["wasm-bindgen"] }
 serde_json = "1.0.13"
+rand = { version = "0.6.0-pre.0", features = [ "wasm-bindgen" ] }

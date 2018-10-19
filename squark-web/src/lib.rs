@@ -2,14 +2,14 @@ extern crate wasm_bindgen;
 
 #[macro_use]
 extern crate serde_json;
-extern crate squark;
 extern crate js_sys;
+extern crate squark;
 
-use std::rc::Rc;
 use std::cell::RefCell;
-use std::collections::{HashMap};
+use std::collections::HashMap;
+use std::rc::Rc;
 
-use squark::{App, AttributeValue, Diff, Element, Env, Node, Runtime, HandlerArg, uuid};
+use squark::{uuid, App, AttributeValue, Diff, Element, Env, HandlerArg, Node, Runtime};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
@@ -63,7 +63,11 @@ pub mod web {
         #[wasm_bindgen(method, js_name = addEventListener)]
         pub fn add_event_listener(this: &HTMLElement, name: &str, handler: &Closure<Fn(JsValue)>);
         #[wasm_bindgen(method, js_name = removeEventListener)]
-        pub fn remove_event_listener(this: &HTMLElement, name: &str, handler: &Closure<Fn(JsValue)>);
+        pub fn remove_event_listener(
+            this: &HTMLElement,
+            name: &str,
+            handler: &Closure<Fn(JsValue)>,
+        );
         #[wasm_bindgen(method, getter)]
         pub fn dataset(this: &HTMLElement) -> DOMStringMap;
         #[wasm_bindgen(method, js_name = querySelectorAll)]
@@ -100,13 +104,13 @@ trait ToHandlerArg {
     fn to_handler_arg(v: JsValue) -> HandlerArg;
 }
 
-impl ToHandlerArg for web::CommonEvent{
+impl ToHandlerArg for web::CommonEvent {
     fn to_handler_arg(_v: JsValue) -> HandlerArg {
         json!{null}
     }
 }
 
-impl ToHandlerArg for web::InputEvent{
+impl ToHandlerArg for web::InputEvent {
     fn to_handler_arg(v: JsValue) -> HandlerArg {
         let target = Self::from(v).target();
         if target.is_null() {
@@ -278,7 +282,9 @@ impl<A: App> WebRuntime<A> {
         name: &str,
         id: &str,
     ) -> Closure<Fn(JsValue)> {
-        let handler = self.pop_handler(id).expect("Could not find handler by given id");
+        let handler = self
+            .pop_handler(id)
+            .expect("Could not find handler by given id");
         let closure = Closure::new(move |e: JsValue| {
             handler(E::to_handler_arg(e));
         });
@@ -321,4 +327,3 @@ impl<A: App> Runtime<A> for WebRuntime<A> {
         self.handle_diff_inner(&self.root, diff);
     }
 }
-

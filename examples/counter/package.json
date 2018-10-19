@@ -4,9 +4,9 @@
     "build": "webpack --mode none"
   },
   "devDependencies": {
-    "@wasm-tool/wasm-pack-plugin": "0.0.6",
-    "webpack": "^4.17.2",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.8"
+    "@wasm-tool/wasm-pack-plugin": "0.1.0",
+    "webpack": "^4.21.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.9"
   }
 }

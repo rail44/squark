@@ -1,4 +1,4 @@
-#![feature(proc_macro_non_items)]
+#![feature(proc_macro_hygiene)]
 
 extern crate squark;
 extern crate squark_macros;
@@ -68,5 +68,6 @@ pub fn run() {
     WebRuntime::<CounterApp>::new(
         squark_web::web::document.query_selector("body"),
         State::new(),
-    ).run();
+    )
+    .run();
 }

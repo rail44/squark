@@ -313,10 +313,12 @@ impl<A> View<A> {
                     handler_map.extend(v.handler_map);
                     children_vec.push(v.node);
                 }
-                Child::ViewList(child_vec) => for v in child_vec {
-                    handler_map.extend(v.handler_map);
-                    children_vec.push(v.node);
-                },
+                Child::ViewList(child_vec) => {
+                    for v in child_vec {
+                        handler_map.extend(v.handler_map);
+                        children_vec.push(v.node);
+                    }
+                }
             }
         }
 
@@ -475,7 +477,6 @@ pub trait Runtime<A: App>: Clone + 'static {
 }
 
 pub fn uuid() -> String {
-    RNG.with(|rng| {
-        Uuid::from_random_bytes(rng.borrow_mut().gen())
-    }).to_string()
+    RNG.with(|rng| Uuid::from_random_bytes(rng.borrow_mut().gen()))
+        .to_string()
 }

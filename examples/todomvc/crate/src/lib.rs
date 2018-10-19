@@ -1,4 +1,4 @@
-#![feature(proc_macro_non_items)]
+#![feature(proc_macro_hygiene)]
 
 extern crate serde_json;
 extern crate squark;
@@ -6,7 +6,7 @@ extern crate squark_macros;
 extern crate squark_web;
 extern crate wasm_bindgen;
 
-use squark::{App, Child, HandlerArg, Runtime, View, uuid};
+use squark::{uuid, App, Child, HandlerArg, Runtime, View};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use std::iter::FromIterator;
@@ -68,7 +68,7 @@ impl Entry {
     }
 
     pub fn view(&self, i: usize, editing: bool) -> View<Action> {
-        let completed = self.completed.clone();
+        let completed = self.completed;
         let mut class = vec![];
         if completed {
             class.push("completed");
@@ -305,9 +305,11 @@ impl App for TodoApp {
                     state.entries[i].description = s;
                 }
             }
-            Action::CheckAll(b) => for mut entry in &mut state.entries {
-                entry.completed = b;
-            },
+            Action::CheckAll(b) => {
+                for mut entry in &mut state.entries {
+                    entry.completed = b;
+                }
+            }
             Action::Check(at, b) => {
                 state.entries[at].completed = b;
             }
@@ -350,5 +352,6 @@ pub fn run() {
     WebRuntime::<TodoApp>::new(
         squark_web::web::document.query_selector("#container"),
         State::new(),
-    ).run();
+    )
+    .run();
 }
