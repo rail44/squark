@@ -6,48 +6,55 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "run", function() { return run; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_requestAnimationFrame_87fb24fb36ab38af", function() { return __wbg_requestAnimationFrame_87fb24fb36ab38af; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_static_accessor_document_dc9cef69d1902a91", function() { return __wbg_static_accessor_document_dc9cef69d1902a91; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_createTextNode_6c26f980865b7ccc", function() { return __wbg_createTextNode_6c26f980865b7ccc; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_createElement_4e8b3a7be451977d", function() { return __wbg_createElement_4e8b3a7be451977d; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_querySelector_b6013fd0ca4510da", function() { return __wbg_querySelector_b6013fd0ca4510da; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_instanceof_HTMLElement_026d0e01442f05cc", function() { return __wbg_instanceof_HTMLElement_026d0e01442f05cc; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_appendChild_0181119a8450586c", function() { return __wbg_appendChild_0181119a8450586c; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_setAttribute_cbcc42afc06e6d3d", function() { return __wbg_setAttribute_cbcc42afc06e6d3d; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_removeAttribute_ccca2d8f30dbf368", function() { return __wbg_removeAttribute_ccca2d8f30dbf368; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_childNodes_587c35b18168e113", function() { return __wbg_childNodes_587c35b18168e113; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_removeChild_f04ea3ce1de5e539", function() { return __wbg_removeChild_f04ea3ce1de5e539; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_replaceChild_3599863dbf1ae0a8", function() { return __wbg_replaceChild_3599863dbf1ae0a8; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_insertBefore_643c801c8d9d6bca", function() { return __wbg_insertBefore_643c801c8d9d6bca; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_addEventListener_0892d66dc9920bdb", function() { return __wbg_addEventListener_0892d66dc9920bdb; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_removeEventListener_8b9068ac5c3a8745", function() { return __wbg_removeEventListener_8b9068ac5c3a8745; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_dataset_6f74a093476a8703", function() { return __wbg_dataset_6f74a093476a8703; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_querySelectorAll_a03c83a2e2856767", function() { return __wbg_querySelectorAll_a03c83a2e2856767; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_id_6a6c30b7e0a4b173", function() { return __wbg_id_6a6c30b7e0a4b173; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_setid_876d2391993ffba5", function() { return __wbg_setid_876d2391993ffba5; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_item_284a670fe2775a13", function() { return __wbg_item_284a670fe2775a13; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_forEach_8a1af3ce047e16ee", function() { return __wbg_forEach_8a1af3ce047e16ee; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_target_7b91b8c9f6efd6c9", function() { return __wbg_target_7b91b8c9f6efd6c9; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_value_5cc497ae1bae4249", function() { return __wbg_value_5cc497ae1bae4249; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_key_e3e036b737566f8b", function() { return __wbg_key_e3e036b737566f8b; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_set_41792391a5bfdd81", function() { return __wbg_set_41792391a5bfdd81; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_new_410d028cca82cf04", function() { return __wbg_new_410d028cca82cf04; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_call_ce9b4ee44f33326d", function() { return __wbg_call_ce9b4ee44f33326d; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_self_94af25ab6983ff22", function() { return __wbg_self_94af25ab6983ff22; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_crypto_928f7a98da33cf58", function() { return __wbg_crypto_928f7a98da33cf58; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_getRandomValues_bf82a46302370cc0", function() { return __wbg_getRandomValues_bf82a46302370cc0; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_getRandomValues_2a57f17feb958097", function() { return __wbg_getRandomValues_2a57f17feb958097; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_require_443fbcad222426b2", function() { return __wbg_require_443fbcad222426b2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_randomFillSync_29737e08f29b48df", function() { return __wbg_randomFillSync_29737e08f29b48df; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_create_element_Document", function() { return __widl_f_create_element_Document; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_create_text_node_Document", function() { return __widl_f_create_text_node_Document; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_query_selector_Document", function() { return __widl_f_query_selector_Document; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_instanceof_Element", function() { return __widl_instanceof_Element; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_query_selector_all_Element", function() { return __widl_f_query_selector_all_Element; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_remove_attribute_Element", function() { return __widl_f_remove_attribute_Element; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_set_attribute_Element", function() { return __widl_f_set_attribute_Element; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_target_Event", function() { return __widl_f_target_Event; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_add_event_listener_with_callback_EventTarget", function() { return __widl_f_add_event_listener_with_callback_EventTarget; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_remove_event_listener_with_callback_EventTarget", function() { return __widl_f_remove_event_listener_with_callback_EventTarget; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_dataset_HTMLElement", function() { return __widl_f_dataset_HTMLElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_value_HTMLInputElement", function() { return __widl_f_value_HTMLInputElement; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_key_KeyboardEvent", function() { return __widl_f_key_KeyboardEvent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_append_child_Node", function() { return __widl_f_append_child_Node; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_insert_before_Node", function() { return __widl_f_insert_before_Node; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_remove_child_Node", function() { return __widl_f_remove_child_Node; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_replace_child_Node", function() { return __widl_f_replace_child_Node; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_child_nodes_Node", function() { return __widl_f_child_nodes_Node; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_item_NodeList", function() { return __widl_f_item_NodeList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_length_NodeList", function() { return __widl_f_length_NodeList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_instanceof_Window", function() { return __widl_instanceof_Window; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_request_animation_frame_Window", function() { return __widl_f_request_animation_frame_Window; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__widl_f_document_Window", function() { return __widl_f_document_Window; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_newnoargs_f3005d02efe69623", function() { return __wbg_newnoargs_f3005d02efe69623; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_call_10738551fb4d99e4", function() { return __wbg_call_10738551fb4d99e4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_get_b5fa2669cbf91d6f", function() { return __wbg_get_b5fa2669cbf91d6f; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_set_6f4fee47694f666d", function() { return __wbg_set_6f4fee47694f666d; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_new_7dfabcd1bc134d87", function() { return __wbg_new_7dfabcd1bc134d87; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_call_bede8bfab21e77d4", function() { return __wbg_call_bede8bfab21e77d4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_self_8cdf63963bb4c289", function() { return __wbg_self_8cdf63963bb4c289; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_crypto_64e0c9517493b1b7", function() { return __wbg_crypto_64e0c9517493b1b7; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_getRandomValues_27d6b297dbf84185", function() { return __wbg_getRandomValues_27d6b297dbf84185; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_getRandomValues_2150024e0e61b027", function() { return __wbg_getRandomValues_2150024e0e61b027; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_require_d29c9c4bd18c48bf", function() { return __wbg_require_d29c9c4bd18c48bf; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbg_randomFillSync_5f8f0c323ccd375c", function() { return __wbg_randomFillSync_5f8f0c323ccd375c; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_object_clone_ref", function() { return __wbindgen_object_clone_ref; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_object_drop_ref", function() { return __wbindgen_object_drop_ref; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_string_new", function() { return __wbindgen_string_new; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_number_get", function() { return __wbindgen_number_get; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_is_null", function() { return __wbindgen_is_null; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_is_undefined", function() { return __wbindgen_is_undefined; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_boolean_get", function() { return __wbindgen_boolean_get; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_is_symbol", function() { return __wbindgen_is_symbol; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_string_get", function() { return __wbindgen_string_get; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_cb_drop", function() { return __wbindgen_cb_drop; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_cb_forget", function() { return __wbindgen_cb_forget; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_jsval_eq", function() { return __wbindgen_jsval_eq; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_closure_wrapper57", function() { return __wbindgen_closure_wrapper57; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_closure_wrapper135", function() { return __wbindgen_closure_wrapper135; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_closure_wrapper136", function() { return __wbindgen_closure_wrapper136; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__wbindgen_throw", function() { return __wbindgen_throw; });
 /* harmony import */ var _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* tslint:disable */
@@ -60,24 +67,19 @@ function run() {
     return _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["run"]();
 }
 
-const stack = [];
+const __widl_f_create_element_Document_target = Document.prototype.createElement || function() {
+    throw new Error(`wasm-bindgen: Document.prototype.createElement does not exist`);
+};
+
+let cachegetUint32Memory = null;
+function getUint32Memory() {
+    if (cachegetUint32Memory === null || cachegetUint32Memory.buffer !== _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["memory"].buffer) {
+        cachegetUint32Memory = new Uint32Array(_todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["memory"].buffer);
+    }
+    return cachegetUint32Memory;
+}
 
 const slab = [{ obj: undefined }, { obj: null }, { obj: true }, { obj: false }];
-
-function getObject(idx) {
-    if ((idx & 1) === 1) {
-        return stack[idx >> 1];
-    } else {
-        const val = slab[idx >> 1];
-
-        return val.obj;
-
-    }
-}
-
-function __wbg_requestAnimationFrame_87fb24fb36ab38af(arg0) {
-    requestAnimationFrame(getObject(arg0));
-}
 
 let slab_next = slab.length;
 
@@ -92,15 +94,20 @@ function addHeapObject(obj) {
     return idx << 1;
 }
 
-function __wbg_static_accessor_document_dc9cef69d1902a91() {
-    return addHeapObject(document);
+const stack = [];
+
+function getObject(idx) {
+    if ((idx & 1) === 1) {
+        return stack[idx >> 1];
+    } else {
+        const val = slab[idx >> 1];
+
+        return val.obj;
+
+    }
 }
 
-const __wbg_createTextNode_6c26f980865b7ccc_target = Document.prototype.createTextNode || function() {
-    throw new Error(`wasm-bindgen: Document.prototype.createTextNode does not exist`);
-};
-
-let cachedDecoder = new TextDecoder('utf-8');
+let cachedTextDecoder = new TextDecoder('utf-8');
 
 let cachegetUint8Memory = null;
 function getUint8Memory() {
@@ -111,61 +118,104 @@ function getUint8Memory() {
 }
 
 function getStringFromWasm(ptr, len) {
-    return cachedDecoder.decode(getUint8Memory().subarray(ptr, ptr + len));
+    return cachedTextDecoder.decode(getUint8Memory().subarray(ptr, ptr + len));
 }
 
-function __wbg_createTextNode_6c26f980865b7ccc(arg0, arg1, arg2) {
+function __widl_f_create_element_Document(arg0, arg1, arg2, exnptr) {
     let varg1 = getStringFromWasm(arg1, arg2);
-    return addHeapObject(__wbg_createTextNode_6c26f980865b7ccc_target.call(getObject(arg0), varg1));
+    try {
+        return addHeapObject(__widl_f_create_element_Document_target.call(getObject(arg0), varg1));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-const __wbg_createElement_4e8b3a7be451977d_target = Document.prototype.createElement || function() {
-    throw new Error(`wasm-bindgen: Document.prototype.createElement does not exist`);
+const __widl_f_create_text_node_Document_target = Document.prototype.createTextNode || function() {
+    throw new Error(`wasm-bindgen: Document.prototype.createTextNode does not exist`);
 };
 
-function __wbg_createElement_4e8b3a7be451977d(arg0, arg1, arg2) {
+function __widl_f_create_text_node_Document(arg0, arg1, arg2) {
     let varg1 = getStringFromWasm(arg1, arg2);
-    return addHeapObject(__wbg_createElement_4e8b3a7be451977d_target.call(getObject(arg0), varg1));
+    return addHeapObject(__widl_f_create_text_node_Document_target.call(getObject(arg0), varg1));
 }
 
-const __wbg_querySelector_b6013fd0ca4510da_target = Document.prototype.querySelector || function() {
+const __widl_f_query_selector_Document_target = Document.prototype.querySelector || function() {
     throw new Error(`wasm-bindgen: Document.prototype.querySelector does not exist`);
 };
 
-function __wbg_querySelector_b6013fd0ca4510da(arg0, arg1, arg2) {
+function isLikeNone(x) {
+    return x === undefined || x === null;
+}
+
+function __widl_f_query_selector_Document(arg0, arg1, arg2, exnptr) {
     let varg1 = getStringFromWasm(arg1, arg2);
-    return addHeapObject(__wbg_querySelector_b6013fd0ca4510da_target.call(getObject(arg0), varg1));
+    try {
+
+        const val = __widl_f_query_selector_Document_target.call(getObject(arg0), varg1);
+        return isLikeNone(val) ? 0 : addHeapObject(val);
+
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-function __wbg_instanceof_HTMLElement_026d0e01442f05cc(idx) {
-    return getObject(idx) instanceof HTMLElement ? 1 : 0;
+function __widl_instanceof_Element(idx) {
+    return getObject(idx) instanceof Element ? 1 : 0;
 }
 
-const __wbg_appendChild_0181119a8450586c_target = HTMLElement.prototype.appendChild || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.appendChild does not exist`);
+const __widl_f_query_selector_all_Element_target = Element.prototype.querySelectorAll || function() {
+    throw new Error(`wasm-bindgen: Element.prototype.querySelectorAll does not exist`);
 };
 
-function __wbg_appendChild_0181119a8450586c(arg0, arg1) {
-    __wbg_appendChild_0181119a8450586c_target.call(getObject(arg0), getObject(arg1));
+function __widl_f_query_selector_all_Element(arg0, arg1, arg2, exnptr) {
+    let varg1 = getStringFromWasm(arg1, arg2);
+    try {
+        return addHeapObject(__widl_f_query_selector_all_Element_target.call(getObject(arg0), varg1));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-const __wbg_setAttribute_cbcc42afc06e6d3d_target = HTMLElement.prototype.setAttribute || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.setAttribute does not exist`);
+const __widl_f_remove_attribute_Element_target = Element.prototype.removeAttribute || function() {
+    throw new Error(`wasm-bindgen: Element.prototype.removeAttribute does not exist`);
 };
 
-function __wbg_setAttribute_cbcc42afc06e6d3d(arg0, arg1, arg2, arg3, arg4) {
+function __widl_f_remove_attribute_Element(arg0, arg1, arg2, exnptr) {
+    let varg1 = getStringFromWasm(arg1, arg2);
+    try {
+        __widl_f_remove_attribute_Element_target.call(getObject(arg0), varg1);
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+const __widl_f_set_attribute_Element_target = Element.prototype.setAttribute || function() {
+    throw new Error(`wasm-bindgen: Element.prototype.setAttribute does not exist`);
+};
+
+function __widl_f_set_attribute_Element(arg0, arg1, arg2, arg3, arg4, exnptr) {
     let varg1 = getStringFromWasm(arg1, arg2);
     let varg3 = getStringFromWasm(arg3, arg4);
-    __wbg_setAttribute_cbcc42afc06e6d3d_target.call(getObject(arg0), varg1, varg3);
-}
+    try {
+        __widl_f_set_attribute_Element_target.call(getObject(arg0), varg1, varg3);
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
 
-const __wbg_removeAttribute_ccca2d8f30dbf368_target = HTMLElement.prototype.removeAttribute || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.removeAttribute does not exist`);
-};
-
-function __wbg_removeAttribute_ccca2d8f30dbf368(arg0, arg1, arg2) {
-    let varg1 = getStringFromWasm(arg1, arg2);
-    __wbg_removeAttribute_ccca2d8f30dbf368_target.call(getObject(arg0), varg1);
+    }
 }
 
 function GetOwnOrInheritedPropertyDescriptor(obj, id) {
@@ -177,242 +227,298 @@ function GetOwnOrInheritedPropertyDescriptor(obj, id) {
     throw new Error(`descriptor for id='${id}' not found`);
 }
 
-const __wbg_childNodes_587c35b18168e113_target = GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'childNodes').get || function() {
-    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'childNodes').get does not exist`);
+const __widl_f_target_Event_target = GetOwnOrInheritedPropertyDescriptor(Event.prototype, 'target').get || function() {
+    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(Event.prototype, 'target').get does not exist`);
 };
 
-function __wbg_childNodes_587c35b18168e113(arg0) {
-    return addHeapObject(__wbg_childNodes_587c35b18168e113_target.call(getObject(arg0)));
+function __widl_f_target_Event(arg0) {
+
+    const val = __widl_f_target_Event_target.call(getObject(arg0));
+    return isLikeNone(val) ? 0 : addHeapObject(val);
+
 }
 
-const __wbg_removeChild_f04ea3ce1de5e539_target = HTMLElement.prototype.removeChild || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.removeChild does not exist`);
+const __widl_f_add_event_listener_with_callback_EventTarget_target = EventTarget.prototype.addEventListener || function() {
+    throw new Error(`wasm-bindgen: EventTarget.prototype.addEventListener does not exist`);
 };
 
-function __wbg_removeChild_f04ea3ce1de5e539(arg0, arg1) {
-    __wbg_removeChild_f04ea3ce1de5e539_target.call(getObject(arg0), getObject(arg1));
-}
-
-const __wbg_replaceChild_3599863dbf1ae0a8_target = HTMLElement.prototype.replaceChild || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.replaceChild does not exist`);
-};
-
-function __wbg_replaceChild_3599863dbf1ae0a8(arg0, arg1, arg2) {
-    __wbg_replaceChild_3599863dbf1ae0a8_target.call(getObject(arg0), getObject(arg1), getObject(arg2));
-}
-
-const __wbg_insertBefore_643c801c8d9d6bca_target = HTMLElement.prototype.insertBefore || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.insertBefore does not exist`);
-};
-
-function __wbg_insertBefore_643c801c8d9d6bca(arg0, arg1, arg2) {
-    __wbg_insertBefore_643c801c8d9d6bca_target.call(getObject(arg0), getObject(arg1), getObject(arg2));
-}
-
-const __wbg_addEventListener_0892d66dc9920bdb_target = HTMLElement.prototype.addEventListener || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.addEventListener does not exist`);
-};
-
-function __wbg_addEventListener_0892d66dc9920bdb(arg0, arg1, arg2, arg3) {
+function __widl_f_add_event_listener_with_callback_EventTarget(arg0, arg1, arg2, arg3, exnptr) {
     let varg1 = getStringFromWasm(arg1, arg2);
-    __wbg_addEventListener_0892d66dc9920bdb_target.call(getObject(arg0), varg1, getObject(arg3));
+    try {
+        __widl_f_add_event_listener_with_callback_EventTarget_target.call(getObject(arg0), varg1, getObject(arg3));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-const __wbg_removeEventListener_8b9068ac5c3a8745_target = HTMLElement.prototype.removeEventListener || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.removeEventListener does not exist`);
+const __widl_f_remove_event_listener_with_callback_EventTarget_target = EventTarget.prototype.removeEventListener || function() {
+    throw new Error(`wasm-bindgen: EventTarget.prototype.removeEventListener does not exist`);
 };
 
-function __wbg_removeEventListener_8b9068ac5c3a8745(arg0, arg1, arg2, arg3) {
+function __widl_f_remove_event_listener_with_callback_EventTarget(arg0, arg1, arg2, arg3, exnptr) {
     let varg1 = getStringFromWasm(arg1, arg2);
-    __wbg_removeEventListener_8b9068ac5c3a8745_target.call(getObject(arg0), varg1, getObject(arg3));
+    try {
+        __widl_f_remove_event_listener_with_callback_EventTarget_target.call(getObject(arg0), varg1, getObject(arg3));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-const __wbg_dataset_6f74a093476a8703_target = GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'dataset').get || function() {
+const __widl_f_dataset_HTMLElement_target = GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'dataset').get || function() {
     throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'dataset').get does not exist`);
 };
 
-function __wbg_dataset_6f74a093476a8703(arg0) {
-    return addHeapObject(__wbg_dataset_6f74a093476a8703_target.call(getObject(arg0)));
+function __widl_f_dataset_HTMLElement(arg0) {
+    return addHeapObject(__widl_f_dataset_HTMLElement_target.call(getObject(arg0)));
 }
 
-const __wbg_querySelectorAll_a03c83a2e2856767_target = HTMLElement.prototype.querySelectorAll || function() {
-    throw new Error(`wasm-bindgen: HTMLElement.prototype.querySelectorAll does not exist`);
+const __widl_f_value_HTMLInputElement_target = GetOwnOrInheritedPropertyDescriptor(HTMLInputElement.prototype, 'value').get || function() {
+    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(HTMLInputElement.prototype, 'value').get does not exist`);
 };
 
-function __wbg_querySelectorAll_a03c83a2e2856767(arg0, arg1, arg2) {
-    let varg1 = getStringFromWasm(arg1, arg2);
-    return addHeapObject(__wbg_querySelectorAll_a03c83a2e2856767_target.call(getObject(arg0), varg1));
-}
-
-const __wbg_id_6a6c30b7e0a4b173_target = GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'id').get || function() {
-    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'id').get does not exist`);
-};
-
-let cachedEncoder = new TextEncoder('utf-8');
+let cachedTextEncoder = new TextEncoder('utf-8');
 
 function passStringToWasm(arg) {
 
-    const buf = cachedEncoder.encode(arg);
+    const buf = cachedTextEncoder.encode(arg);
     const ptr = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbindgen_malloc"](buf.length);
     getUint8Memory().set(buf, ptr);
     return [ptr, buf.length];
 }
 
-let cachegetUint32Memory = null;
-function getUint32Memory() {
-    if (cachegetUint32Memory === null || cachegetUint32Memory.buffer !== _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["memory"].buffer) {
-        cachegetUint32Memory = new Uint32Array(_todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["memory"].buffer);
-    }
-    return cachegetUint32Memory;
-}
+function __widl_f_value_HTMLInputElement(ret, arg0) {
 
-function __wbg_id_6a6c30b7e0a4b173(ret, arg0) {
-
-    const [retptr, retlen] = passStringToWasm(__wbg_id_6a6c30b7e0a4b173_target.call(getObject(arg0)));
+    const [retptr, retlen] = passStringToWasm(__widl_f_value_HTMLInputElement_target.call(getObject(arg0)));
     const mem = getUint32Memory();
     mem[ret / 4] = retptr;
     mem[ret / 4 + 1] = retlen;
 
 }
 
-const __wbg_setid_876d2391993ffba5_target = GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'id').set || function() {
-    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(HTMLElement.prototype, 'id').set does not exist`);
-};
-
-function __wbg_setid_876d2391993ffba5(arg0, arg1, arg2) {
-    let varg1 = getStringFromWasm(arg1, arg2);
-    __wbg_setid_876d2391993ffba5_target.call(getObject(arg0), varg1);
-}
-
-const __wbg_item_284a670fe2775a13_target = NodeList.prototype.item || function() {
-    throw new Error(`wasm-bindgen: NodeList.prototype.item does not exist`);
-};
-
-function __wbg_item_284a670fe2775a13(arg0, arg1) {
-    return addHeapObject(__wbg_item_284a670fe2775a13_target.call(getObject(arg0), arg1));
-}
-
-const __wbg_forEach_8a1af3ce047e16ee_target = NodeList.prototype.forEach || function() {
-    throw new Error(`wasm-bindgen: NodeList.prototype.forEach does not exist`);
-};
-
-let cachedGlobalArgumentPtr = null;
-function globalArgumentPtr() {
-    if (cachedGlobalArgumentPtr === null) {
-        cachedGlobalArgumentPtr = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbindgen_global_argument_ptr"]();
-    }
-    return cachedGlobalArgumentPtr;
-}
-
-function getGlobalArgument(arg) {
-    const idx = globalArgumentPtr() / 4 + arg;
-    return getUint32Memory()[idx];
-}
-
-function __wbg_forEach_8a1af3ce047e16ee(arg0, arg1) {
-    let cbarg1 = function(arg0) {
-        let a = this.a;
-        this.a = 0;
-        try {
-            return this.f(a, this.b, addHeapObject(arg0));
-
-        } finally {
-            this.a = a;
-
-        }
-
-    };
-    cbarg1.f = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbg_function_table"].get(arg1);
-    cbarg1.a = getGlobalArgument(0);
-    cbarg1.b = getGlobalArgument(0 + 1);
-    try {
-        __wbg_forEach_8a1af3ce047e16ee_target.call(getObject(arg0), cbarg1.bind(cbarg1));
-    } finally {
-        cbarg1.a = cbarg1.b = 0;
-
-    }
-}
-
-const __wbg_target_7b91b8c9f6efd6c9_target = GetOwnOrInheritedPropertyDescriptor(InputEvent.prototype, 'target').get || function() {
-    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(InputEvent.prototype, 'target').get does not exist`);
-};
-
-function __wbg_target_7b91b8c9f6efd6c9(arg0) {
-    return addHeapObject(__wbg_target_7b91b8c9f6efd6c9_target.call(getObject(arg0)));
-}
-
-const __wbg_value_5cc497ae1bae4249_target = GetOwnOrInheritedPropertyDescriptor(HTMLInputElement.prototype, 'value').get || function() {
-    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(HTMLInputElement.prototype, 'value').get does not exist`);
-};
-
-function __wbg_value_5cc497ae1bae4249(ret, arg0) {
-
-    const [retptr, retlen] = passStringToWasm(__wbg_value_5cc497ae1bae4249_target.call(getObject(arg0)));
-    const mem = getUint32Memory();
-    mem[ret / 4] = retptr;
-    mem[ret / 4 + 1] = retlen;
-
-}
-
-const __wbg_key_e3e036b737566f8b_target = GetOwnOrInheritedPropertyDescriptor(KeyboardEvent.prototype, 'key').get || function() {
+const __widl_f_key_KeyboardEvent_target = GetOwnOrInheritedPropertyDescriptor(KeyboardEvent.prototype, 'key').get || function() {
     throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(KeyboardEvent.prototype, 'key').get does not exist`);
 };
 
-function __wbg_key_e3e036b737566f8b(ret, arg0) {
+function __widl_f_key_KeyboardEvent(ret, arg0) {
 
-    const [retptr, retlen] = passStringToWasm(__wbg_key_e3e036b737566f8b_target.call(getObject(arg0)));
+    const [retptr, retlen] = passStringToWasm(__widl_f_key_KeyboardEvent_target.call(getObject(arg0)));
     const mem = getUint32Memory();
     mem[ret / 4] = retptr;
     mem[ret / 4 + 1] = retlen;
 
 }
 
-const __wbg_set_41792391a5bfdd81_target = Reflect.set.bind(Reflect) || function() {
-    throw new Error(`wasm-bindgen: Reflect.set.bind(Reflect) does not exist`);
+const __widl_f_append_child_Node_target = Node.prototype.appendChild || function() {
+    throw new Error(`wasm-bindgen: Node.prototype.appendChild does not exist`);
 };
 
-function __wbg_set_41792391a5bfdd81(arg0, arg1, arg2) {
-    return __wbg_set_41792391a5bfdd81_target(getObject(arg0), getObject(arg1), getObject(arg2)) ? 1 : 0;
+function __widl_f_append_child_Node(arg0, arg1, exnptr) {
+    try {
+        return addHeapObject(__widl_f_append_child_Node_target.call(getObject(arg0), getObject(arg1)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-function __wbg_new_410d028cca82cf04(arg0, arg1) {
+const __widl_f_insert_before_Node_target = Node.prototype.insertBefore || function() {
+    throw new Error(`wasm-bindgen: Node.prototype.insertBefore does not exist`);
+};
+
+function __widl_f_insert_before_Node(arg0, arg1, arg2, exnptr) {
+    try {
+        return addHeapObject(__widl_f_insert_before_Node_target.call(getObject(arg0), getObject(arg1), getObject(arg2)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+const __widl_f_remove_child_Node_target = Node.prototype.removeChild || function() {
+    throw new Error(`wasm-bindgen: Node.prototype.removeChild does not exist`);
+};
+
+function __widl_f_remove_child_Node(arg0, arg1, exnptr) {
+    try {
+        return addHeapObject(__widl_f_remove_child_Node_target.call(getObject(arg0), getObject(arg1)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+const __widl_f_replace_child_Node_target = Node.prototype.replaceChild || function() {
+    throw new Error(`wasm-bindgen: Node.prototype.replaceChild does not exist`);
+};
+
+function __widl_f_replace_child_Node(arg0, arg1, arg2, exnptr) {
+    try {
+        return addHeapObject(__widl_f_replace_child_Node_target.call(getObject(arg0), getObject(arg1), getObject(arg2)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+const __widl_f_child_nodes_Node_target = GetOwnOrInheritedPropertyDescriptor(Node.prototype, 'childNodes').get || function() {
+    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(Node.prototype, 'childNodes').get does not exist`);
+};
+
+function __widl_f_child_nodes_Node(arg0) {
+    return addHeapObject(__widl_f_child_nodes_Node_target.call(getObject(arg0)));
+}
+
+const __widl_f_item_NodeList_target = NodeList.prototype.item || function() {
+    throw new Error(`wasm-bindgen: NodeList.prototype.item does not exist`);
+};
+
+function __widl_f_item_NodeList(arg0, arg1) {
+
+    const val = __widl_f_item_NodeList_target.call(getObject(arg0), arg1);
+    return isLikeNone(val) ? 0 : addHeapObject(val);
+
+}
+
+const __widl_f_length_NodeList_target = GetOwnOrInheritedPropertyDescriptor(NodeList.prototype, 'length').get || function() {
+    throw new Error(`wasm-bindgen: GetOwnOrInheritedPropertyDescriptor(NodeList.prototype, 'length').get does not exist`);
+};
+
+function __widl_f_length_NodeList(arg0) {
+    return __widl_f_length_NodeList_target.call(getObject(arg0));
+}
+
+function __widl_instanceof_Window(idx) {
+    return getObject(idx) instanceof Window ? 1 : 0;
+}
+
+const __widl_f_request_animation_frame_Window_target = function(x0) {
+    return this.requestAnimationFrame(x0);
+};
+
+function __widl_f_request_animation_frame_Window(arg0, arg1, exnptr) {
+    try {
+        return __widl_f_request_animation_frame_Window_target.call(getObject(arg0), getObject(arg1));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+const __widl_f_document_Window_target = function() {
+    return this.document;
+};
+
+function __widl_f_document_Window(arg0) {
+
+    const val = __widl_f_document_Window_target.call(getObject(arg0));
+    return isLikeNone(val) ? 0 : addHeapObject(val);
+
+}
+
+function __wbg_newnoargs_f3005d02efe69623(arg0, arg1) {
     let varg0 = getStringFromWasm(arg0, arg1);
     return addHeapObject(new Function(varg0));
 }
 
-const __wbg_call_ce9b4ee44f33326d_target = Function.prototype.call || function() {
+const __wbg_call_10738551fb4d99e4_target = Function.prototype.call || function() {
     throw new Error(`wasm-bindgen: Function.prototype.call does not exist`);
 };
 
-function __wbg_call_ce9b4ee44f33326d(arg0, arg1) {
-    return addHeapObject(__wbg_call_ce9b4ee44f33326d_target.call(getObject(arg0), getObject(arg1)));
+function __wbg_call_10738551fb4d99e4(arg0, arg1, exnptr) {
+    try {
+        return addHeapObject(__wbg_call_10738551fb4d99e4_target.call(getObject(arg0), getObject(arg1)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
 }
 
-const __wbg_self_94af25ab6983ff22_target = function() {
+const __wbg_get_b5fa2669cbf91d6f_target = Reflect.get.bind(Reflect) || function() {
+    throw new Error(`wasm-bindgen: Reflect.get.bind(Reflect) does not exist`);
+};
+
+function __wbg_get_b5fa2669cbf91d6f(arg0, arg1, exnptr) {
+    try {
+        return addHeapObject(__wbg_get_b5fa2669cbf91d6f_target(getObject(arg0), getObject(arg1)));
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+const __wbg_set_6f4fee47694f666d_target = Reflect.set.bind(Reflect) || function() {
+    throw new Error(`wasm-bindgen: Reflect.set.bind(Reflect) does not exist`);
+};
+
+function __wbg_set_6f4fee47694f666d(arg0, arg1, arg2, exnptr) {
+    try {
+        return __wbg_set_6f4fee47694f666d_target(getObject(arg0), getObject(arg1), getObject(arg2)) ? 1 : 0;
+    } catch (e) {
+        const view = getUint32Memory();
+        view[exnptr / 4] = 1;
+        view[exnptr / 4 + 1] = addHeapObject(e);
+
+    }
+}
+
+function __wbg_new_7dfabcd1bc134d87(arg0, arg1) {
+    let varg0 = getStringFromWasm(arg0, arg1);
+    return addHeapObject(new Function(varg0));
+}
+
+const __wbg_call_bede8bfab21e77d4_target = Function.prototype.call || function() {
+    throw new Error(`wasm-bindgen: Function.prototype.call does not exist`);
+};
+
+function __wbg_call_bede8bfab21e77d4(arg0, arg1) {
+    return addHeapObject(__wbg_call_bede8bfab21e77d4_target.call(getObject(arg0), getObject(arg1)));
+}
+
+const __wbg_self_8cdf63963bb4c289_target = function() {
     return this.self;
 };
 
-function __wbg_self_94af25ab6983ff22(arg0) {
-    return addHeapObject(__wbg_self_94af25ab6983ff22_target.call(getObject(arg0)));
+function __wbg_self_8cdf63963bb4c289(arg0) {
+    return addHeapObject(__wbg_self_8cdf63963bb4c289_target.call(getObject(arg0)));
 }
 
-const __wbg_crypto_928f7a98da33cf58_target = function() {
+const __wbg_crypto_64e0c9517493b1b7_target = function() {
     return this.crypto;
 };
 
-function __wbg_crypto_928f7a98da33cf58(arg0) {
-    return addHeapObject(__wbg_crypto_928f7a98da33cf58_target.call(getObject(arg0)));
+function __wbg_crypto_64e0c9517493b1b7(arg0) {
+    return addHeapObject(__wbg_crypto_64e0c9517493b1b7_target.call(getObject(arg0)));
 }
 
-const __wbg_getRandomValues_bf82a46302370cc0_target = function() {
+const __wbg_getRandomValues_27d6b297dbf84185_target = function() {
     return this.getRandomValues;
 };
 
-function __wbg_getRandomValues_bf82a46302370cc0(arg0) {
-    return addHeapObject(__wbg_getRandomValues_bf82a46302370cc0_target.call(getObject(arg0)));
+function __wbg_getRandomValues_27d6b297dbf84185(arg0) {
+    return addHeapObject(__wbg_getRandomValues_27d6b297dbf84185_target.call(getObject(arg0)));
 }
 
-const __wbg_getRandomValues_2a57f17feb958097_target = function(x0) {
+const __wbg_getRandomValues_2150024e0e61b027_target = function(x0) {
     return this.getRandomValues(x0);
 };
 
@@ -420,23 +526,23 @@ function getArrayU8FromWasm(ptr, len) {
     return getUint8Memory().subarray(ptr / 1, ptr / 1 + len);
 }
 
-function __wbg_getRandomValues_2a57f17feb958097(arg0, arg1, arg2) {
+function __wbg_getRandomValues_2150024e0e61b027(arg0, arg1, arg2) {
     let varg1 = getArrayU8FromWasm(arg1, arg2);
-    __wbg_getRandomValues_2a57f17feb958097_target.call(getObject(arg0), varg1);
+    __wbg_getRandomValues_2150024e0e61b027_target.call(getObject(arg0), varg1);
 }
 
-function __wbg_require_443fbcad222426b2(arg0, arg1) {
+function __wbg_require_d29c9c4bd18c48bf(arg0, arg1) {
     let varg0 = getStringFromWasm(arg0, arg1);
     return addHeapObject(__webpack_require__(3)(varg0));
 }
 
-const __wbg_randomFillSync_29737e08f29b48df_target = function(x0) {
+const __wbg_randomFillSync_5f8f0c323ccd375c_target = function(x0) {
     return this.randomFillSync(x0);
 };
 
-function __wbg_randomFillSync_29737e08f29b48df(arg0, arg1, arg2) {
+function __wbg_randomFillSync_5f8f0c323ccd375c(arg0, arg1, arg2) {
     let varg1 = getArrayU8FromWasm(arg1, arg2);
-    __wbg_randomFillSync_29737e08f29b48df_target.call(getObject(arg0), varg1);
+    __wbg_randomFillSync_5f8f0c323ccd375c_target.call(getObject(arg0), varg1);
 }
 
 function __wbindgen_object_clone_ref(idx) {
@@ -472,6 +578,13 @@ function __wbindgen_string_new(p, l) {
     return addHeapObject(getStringFromWasm(p, l));
 }
 
+function __wbindgen_number_get(n, invalid) {
+    let obj = getObject(n);
+    if (typeof(obj) === 'number') return obj;
+    getUint8Memory()[invalid] = 1;
+    return 0;
+}
+
 function __wbindgen_is_null(idx) {
     return getObject(idx) === null ? 1 : 0;
 }
@@ -480,26 +593,83 @@ function __wbindgen_is_undefined(idx) {
     return getObject(idx) === undefined ? 1 : 0;
 }
 
-function __wbindgen_cb_drop(i) {
-    let obj = getObject(i).original;
-    obj.a = obj.b = 0;
-    dropRef(i);
+function __wbindgen_boolean_get(i) {
+    let v = getObject(i);
+    if (typeof(v) === 'boolean') {
+        return v ? 1 : 0;
+    } else {
+        return 2;
+    }
 }
 
-function __wbindgen_cb_forget(i) {
-    dropRef(i);
+function __wbindgen_is_symbol(i) {
+    return typeof(getObject(i)) === 'symbol' ? 1 : 0;
 }
+
+function __wbindgen_string_get(i, len_ptr) {
+    let obj = getObject(i);
+    if (typeof(obj) !== 'string') return 0;
+    const [ptr, len] = passStringToWasm(obj);
+    getUint32Memory()[len_ptr / 4] = len;
+    return ptr;
+}
+
+function __wbindgen_cb_drop(i) {
+    const obj = getObject(i).original;
+    dropRef(i);
+    if (obj.cnt-- == 1) {
+        obj.a = 0;
+        return 1;
+    }
+    return 0;
+}
+
+const __wbindgen_cb_forget = dropRef;
 
 function __wbindgen_jsval_eq(a, b) {
     return getObject(a) === getObject(b) ? 1 : 0;
 }
 
-function __wbindgen_closure_wrapper57(ptr, f, _ignored) {
-    let cb = function(arg0) {
-        return this.f(this.a, addHeapObject(arg0));
+function __wbindgen_closure_wrapper135(a, b, fi, di, _ignored) {
+    const f = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbg_function_table"].get(fi);
+    const d = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbg_function_table"].get(di);
+    const cb = function(arg0) {
+        this.cnt++;
+        try {
+            return f(this.a, b, addHeapObject(arg0));
+
+        } finally {
+            if (this.cnt-- == 1) d(this.a, b);
+
+        }
+
     };
-    cb.f = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbg_function_table"].get(f);
-    cb.a = ptr;
+    cb.a = a;
+    cb.cnt = 1;
+    let real = cb.bind(cb);
+    real.original = cb;
+    return addHeapObject(real);
+}
+
+function __wbindgen_closure_wrapper136(a, b, fi, di, _ignored) {
+    const f = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbg_function_table"].get(fi);
+    const d = _todomvc_bg__WEBPACK_IMPORTED_MODULE_0__["__wbg_function_table"].get(di);
+    const cb = function(arg0) {
+        this.cnt++;
+        let a = this.a;
+        this.a = 0;
+        try {
+            return f(a, b, addHeapObject(arg0));
+
+        } finally {
+            this.a = a;
+            if (this.cnt-- == 1) d(this.a, b);
+
+        }
+
+    };
+    cb.a = a;
+    cb.cnt = 1;
     let real = cb.bind(cb);
     real.original = cb;
     return addHeapObject(real);
