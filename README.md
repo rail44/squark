@@ -48,17 +48,19 @@ Runtime implemention for web browser with usinng [wasm-bindgen](https://github.c
 Here is full example of counter app!
 
 ```rust
-#![feature(proc_macro_non_items)]
+#![feature(proc_macro_hygiene)]
 
 extern crate squark;
 extern crate squark_macros;
 extern crate squark_web;
 extern crate wasm_bindgen;
+extern crate web_sys;
 
 use squark::{App, Runtime, View};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use wasm_bindgen::prelude::*;
+use web_sys::window;
 
 #[derive(Clone, Debug, PartialEq)]
 struct State {
@@ -82,7 +84,7 @@ impl App for CounterApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(mut state: State, action: Action) -> State {
+    fn reducer(&self, mut state: State, action: Action) -> State {
         match action {
             Action::ChangeCount(c) => {
                 state.count = c;
@@ -91,7 +93,7 @@ impl App for CounterApp {
         state
     }
 
-    fn view(state: State) -> View<Action> {
+    fn view(&self, state: State) -> View<Action> {
         let count = state.count;
         view! {
             <div>
@@ -107,12 +109,25 @@ impl App for CounterApp {
     }
 }
 
+impl Default for CounterApp {
+    fn default() -> CounterApp {
+        CounterApp
+    }
+}
+
 #[wasm_bindgen]
 pub fn run() {
     WebRuntime::<CounterApp>::new(
-        squark_web::web::document.query_selector("body"),
+        window()
+            .unwrap()
+            .document()
+            .expect("Failed to get document")
+            .query_selector("body")
+            .unwrap()
+            .unwrap(),
         State::new(),
-    ).run();
+    )
+    .run();
 }
 ```
 
