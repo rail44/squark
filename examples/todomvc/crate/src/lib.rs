@@ -5,12 +5,14 @@ extern crate squark;
 extern crate squark_macros;
 extern crate squark_web;
 extern crate wasm_bindgen;
+extern crate web_sys;
 
 use squark::{uuid, App, Child, HandlerArg, Runtime, View};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use std::iter::FromIterator;
 use wasm_bindgen::prelude::*;
+use web_sys::window;
 
 #[derive(Clone, Hash, Debug, PartialEq)]
 enum Visibility {
@@ -350,7 +352,13 @@ impl Default for TodoApp {
 #[wasm_bindgen]
 pub fn run() {
     WebRuntime::<TodoApp>::new(
-        squark_web::web::document.query_selector("#container"),
+        window()
+            .unwrap()
+            .document()
+            .unwrap()
+            .query_selector("#container")
+            .unwrap()
+            .unwrap(),
         State::new(),
     )
     .run();
