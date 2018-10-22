@@ -53,14 +53,17 @@ fn document() -> Document {
     window().unwrap().document().unwrap()
 }
 
-fn get_id(el: &Element) -> String {
-    let id = el.id();
-    if &id != "" {
-        return id;
+fn handler_id(el: &HtmlElement) -> String {
+    let dataset = el.dataset();
+
+    let id = js_sys::Reflect::get(dataset.as_ref(), &"handlerId".into()).unwrap();
+
+    if !id.is_undefined() {
+        return id.as_string().unwrap();
     }
 
     let id = uuid();
-    el.set_id(&id);
+    js_sys::Reflect::set(dataset.as_ref(), &"handlerId".into(), &id.clone().into()).unwrap();
     id
 }
 
@@ -123,7 +126,7 @@ impl<A: App> WebRuntime<A> {
                 let attached = self
                     .attached_map
                     .borrow_mut()
-                    .get_mut(&get_id(el))
+                    .get_mut(&handler_id(el.unchecked_ref()))
                     .and_then(|inner| inner.remove(&name))
                     .unwrap();
                 let html_el: &EventTarget = el.unchecked_ref();
@@ -205,15 +208,14 @@ impl<A: App> WebRuntime<A> {
         parent.remove_child(&current).unwrap();
     }
 
-    fn set_handler(&self, el: &HtmlElement, name: &str, id: &str) {
-        js_sys::Reflect::set(&el.dataset().as_ref(), &"hasHandler".into(), &"".into()).unwrap();
+    fn set_handler(&self, el: &Element, name: &str, id: &str) {
         let closure = match name {
             "keydown" => self._set_handler::<web_sys::KeyboardEvent>(el.as_ref(), "keydown", id),
             "input" => self._set_handler::<web_sys::InputEvent>(el.as_ref(), "input", id),
             name => self._set_handler::<web_sys::Event>(el.as_ref(), name, id),
         };
 
-        let id = get_id(el.as_ref());
+        let id = handler_id(el.unchecked_ref());
         let mut map = self.attached_map.borrow_mut();
         let inner = map.entry(id).or_insert_with(HashMap::new);
         if let Some(attached) = inner.remove(name) {
@@ -249,12 +251,12 @@ impl<A: App> WebRuntime<A> {
         let el: &Element = el.unchecked_ref();
 
         let mut map = self.attached_map.borrow_mut();
-        map.remove(&get_id(el));
+        map.remove(&handler_id(el.unchecked_ref()));
 
         let children = el.query_selector_all("[data-has-handler]").unwrap();
         for i in 0..children.length() {
             let child = children.item(i).unwrap();
-            map.remove(&get_id(child.unchecked_ref()));
+            map.remove(&handler_id(child.unchecked_ref()));
         }
     }
 }
