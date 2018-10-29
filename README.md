@@ -30,7 +30,7 @@ Crate that providing JSX like macro by `proc_marco` and [pest](https://github.co
 
 ```   
 view! {
-    <button class="some-class" onclick={ |_| { Some(Action::Submit) }>
+    <button class="some-class" onclick={ |_| Some(Action::Submit) }>
         Button!
     </button>
 }
