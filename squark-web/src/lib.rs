@@ -11,7 +11,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use squark::{
-    uuid, App, AttributeValue, Diff, Element as SquarkElement, Env, HandlerArg, Node as SquarkNode,
+    App, AttributeValue, Diff, Element as SquarkElement, Env, HandlerArg, Node as SquarkNode,
     Runtime,
 };
 use wasm_bindgen::prelude::*;
@@ -53,18 +53,17 @@ fn document() -> Document {
     window().unwrap().document().unwrap()
 }
 
-fn handler_id(el: &HtmlElement) -> String {
-    let dataset = el.dataset();
+fn get_handler_id(el: &HtmlElement) -> Option<String> {
+    let id = js_sys::Reflect::get(el.dataset().as_ref(), &"handlerId".into()).unwrap();
 
-    let id = js_sys::Reflect::get(dataset.as_ref(), &"handlerId".into()).unwrap();
-
-    if !id.is_undefined() {
-        return id.as_string().unwrap();
+    if id.is_undefined() {
+        return None;
     }
+    Some(id.as_string().unwrap())
+}
 
-    let id = uuid();
-    js_sys::Reflect::set(dataset.as_ref(), &"handlerId".into(), &id.clone().into()).unwrap();
-    id
+fn set_handler_id(el: &HtmlElement, id: &str) {
+    js_sys::Reflect::set(el.dataset().as_ref(), &"handlerId".into(), &id.into()).unwrap();
 }
 
 #[derive(Clone)]
@@ -126,7 +125,7 @@ impl<A: App> WebRuntime<A> {
                 let attached = self
                     .attached_map
                     .borrow_mut()
-                    .get_mut(&handler_id(el.unchecked_ref()))
+                    .get_mut(&get_handler_id(el.unchecked_ref()).unwrap())
                     .and_then(|inner| inner.remove(&name))
                     .unwrap();
                 let html_el: &EventTarget = el.unchecked_ref();
@@ -215,9 +214,9 @@ impl<A: App> WebRuntime<A> {
             name => self._set_handler::<web_sys::Event>(el.as_ref(), name, id),
         };
 
-        let id = handler_id(el.unchecked_ref());
+        set_handler_id(el.unchecked_ref(), id);
         let mut map = self.attached_map.borrow_mut();
-        let inner = map.entry(id).or_insert_with(HashMap::new);
+        let inner = map.entry(id.to_owned()).or_insert_with(HashMap::new);
         if let Some(attached) = inner.remove(name) {
             let target: &EventTarget = el.as_ref();
             target
@@ -251,12 +250,16 @@ impl<A: App> WebRuntime<A> {
         let el: &Element = el.unchecked_ref();
 
         let mut map = self.attached_map.borrow_mut();
-        map.remove(&handler_id(el.unchecked_ref()));
+        if let Some(id) = get_handler_id(el.unchecked_ref()) {
+            map.remove(&id);
+        }
 
         let children = el.query_selector_all("[data-has-handler]").unwrap();
         for i in 0..children.length() {
             let child = children.item(i).unwrap();
-            map.remove(&handler_id(child.unchecked_ref()));
+            if let Some(id) = get_handler_id(child.unchecked_ref()) {
+                map.remove(&id);
+            }
         }
     }
 }
@@ -267,7 +270,7 @@ impl<A: App> Runtime<A> for WebRuntime<A> {
     }
 
     fn schedule_render(&self) {
-        let this = self.clone();
+        let this = self.to_owned();
         let closure = Closure::wrap(Box::new(move |_: JsValue| {
             this.run();
         }) as Box<FnMut(_)>);
