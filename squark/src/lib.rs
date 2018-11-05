@@ -26,10 +26,10 @@ fn diff_attributes(a: &mut Vec<Attribute>, b: &[Attribute]) -> Vec<Diff> {
         match old_map.remove(new_key) {
             Some(old_val) => {
                 if &old_val != new_val {
-                    result.push(Diff::SetAttribute(new_key.clone(), new_val.clone()))
+                    result.push(Diff::SetAttribute(new_key.to_owned(), new_val.to_owned()))
                 }
             }
-            None => result.push(Diff::SetAttribute(new_key.clone(), new_val.clone())),
+            None => result.push(Diff::SetAttribute(new_key.to_owned(), new_val.to_owned())),
         }
     }
 
@@ -49,7 +49,7 @@ fn diff_handlers(a: &mut Vec<Handler>, b: &[Handler]) -> Vec<Diff> {
     let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
     for &(ref new_key, ref new_id) in b {
         old_map.remove(new_key);
-        result.push(Diff::SetHandler(new_key.clone(), new_id.clone()));
+        result.push(Diff::SetHandler(new_key.to_owned(), new_id.to_owned()));
     }
 
     for (old_key, old_id) in old_map.drain() {
@@ -79,12 +79,12 @@ impl Node {
                 if text_a == text_b {
                     return None;
                 }
-                Some(Diff::ReplaceChild(*i, b.clone()))
+                Some(Diff::ReplaceChild(*i, b.to_owned()))
             }
             (&mut Node::Null, &Node::Null) => None,
-            (&mut Node::Null, _) => Some(Diff::AddChild(*i, b.clone())),
+            (&mut Node::Null, _) => Some(Diff::AddChild(*i, b.to_owned())),
             (_, &Node::Null) => Some(Diff::RemoveChild(*i)),
-            _ => Some(Diff::ReplaceChild(*i, b.clone())),
+            _ => Some(Diff::ReplaceChild(*i, b.to_owned())),
         }
     }
 
@@ -128,12 +128,12 @@ fn diff_children(a: &mut Vec<Node>, b: &[Node], i: &mut usize) -> Vec<Diff> {
     for new_child in b.iter() {
         match a.pop() {
             None => {
-                result.push(Diff::AddChild(i, new_child.clone()));
+                result.push(Diff::AddChild(i, new_child.to_owned()));
                 i += 1;
             }
             Some(mut old_child) => {
                 if let Some(diff) = Node::diff(&mut old_child, new_child, &mut i) {
-                    result.push(diff.clone());
+                    result.push(diff.to_owned());
                     if let Diff::RemoveChild(_) = diff {
                         continue;
                     }
@@ -192,12 +192,12 @@ impl Element {
     fn diff(a: &mut Element, b: &Element, i: usize) -> Option<Diff> {
         if let (Some(a_key), Some(b_key)) = (a.get_key(), b.get_key()) {
             if a_key != b_key {
-                return Some(Diff::ReplaceChild(i, Node::Element(b.clone())));
+                return Some(Diff::ReplaceChild(i, Node::Element(b.to_owned())));
             }
         }
 
         if a.name != b.name {
-            return Some(Diff::ReplaceChild(i, Node::Element(b.clone())));
+            return Some(Diff::ReplaceChild(i, Node::Element(b.to_owned())));
         }
 
         let mut result = vec![];
@@ -217,7 +217,7 @@ impl Element {
             .iter()
             .find(|&&(ref k, _)| k == "key")
             .and_then(|&(_, ref v)| match v {
-                AttributeValue::String(ref s) => Some(s.clone()),
+                AttributeValue::String(ref s) => Some(s.to_owned()),
                 AttributeValue::Bool(_) => None,
             })
     }
@@ -249,7 +249,7 @@ impl From<String> for AttributeValue {
 
 impl<'a> From<&'a str> for AttributeValue {
     fn from(s: &'a str) -> AttributeValue {
-        AttributeValue::String(s.to_string())
+        AttributeValue::String(s.to_owned())
     }
 }
 
@@ -300,7 +300,7 @@ impl<A> View<A> {
         let handlers = handlers
             .into_iter()
             .map(|(kind, (id, f))| {
-                let handler = (kind, id.clone());
+                let handler = (kind, id.to_owned());
                 handler_map.insert(id, f);
                 handler
             })
@@ -357,7 +357,7 @@ impl<A> From<String> for View<A> {
 
 impl<'a, A> From<&'a str> for View<A> {
     fn from(s: &'a str) -> View<A> {
-        View::text(s.to_string())
+        View::text(s.to_owned())
     }
 }
 
@@ -407,7 +407,7 @@ impl<A: App> Env<A> {
     }
 
     fn get_state(&self) -> A::State {
-        self.state.borrow().clone()
+        self.state.borrow().to_owned()
     }
 
     fn set_state(&self, state: A::State) {
@@ -415,7 +415,7 @@ impl<A: App> Env<A> {
     }
 
     fn get_node(&self) -> Node {
-        self.node.borrow().clone()
+        self.node.borrow().to_owned()
     }
 
     fn set_node(&self, node: Node) {
@@ -449,9 +449,9 @@ pub trait Runtime<A: App>: Clone + 'static {
     fn pop_handler(&self, id: &str) -> Option<Box<Fn(HandlerArg)>> {
         let env = self.get_env();
         let handler = env.pop_handler(id)?;
-        let app = env.app.clone();
+        let app = env.app.to_owned();
 
-        let this = self.clone();
+        let this = self.to_owned();
         let f = move |arg: HandlerArg| {
             let action = match handler(arg) {
                 Some(a) => a,
@@ -461,7 +461,7 @@ pub trait Runtime<A: App>: Clone + 'static {
             let env = this.get_env();
 
             let old_state = env.get_state();
-            let new_state = app.reducer(old_state.clone(), action);
+            let new_state = app.reducer(old_state.to_owned(), action);
             if old_state == new_state {
                 return;
             }
