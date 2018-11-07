@@ -1,10 +1,11 @@
 extern crate rand;
 extern crate serde_json;
 extern crate uuid;
+extern crate rustc_hash;
 
 use rand::prelude::*;
 use std::cell::{Cell, RefCell};
-use std::collections::{HashMap, HashSet};
+use rustc_hash::{FxHashMap, FxHashSet};
 use std::fmt::Debug;
 use std::iter::FromIterator;
 use std::rc::Rc;
@@ -21,7 +22,7 @@ type Attribute = (String, AttributeValue);
 fn diff_attributes(a: &mut Vec<Attribute>, b: &[Attribute]) -> Vec<Diff> {
     let mut result = vec![];
 
-    let mut old_map = HashMap::<String, AttributeValue>::from_iter(a.drain(..));
+    let mut old_map = FxHashMap::<String, AttributeValue>::from_iter(a.drain(..));
     for &(ref new_key, ref new_val) in b {
         match old_map.remove(new_key) {
             Some(old_val) => {
@@ -46,7 +47,7 @@ type Handler = (String, String);
 fn diff_handlers(a: &mut Vec<Handler>, b: &[Handler]) -> Vec<Diff> {
     let mut result = vec![];
 
-    let mut old_map = HashMap::<String, String>::from_iter(a.drain(..));
+    let mut old_map = FxHashMap::<String, String>::from_iter(a.drain(..));
     for &(ref new_key, ref new_id) in b {
         old_map.remove(new_key);
         result.push(Diff::SetHandler(new_key.to_owned(), new_id.to_owned()));
@@ -96,8 +97,8 @@ impl Node {
     }
 }
 
-fn get_nodelist_key_set(nodelist: &[Node]) -> HashSet<String> {
-    HashSet::from_iter(nodelist.iter().filter_map(|c| c.get_key()))
+fn get_nodelist_key_set(nodelist: &[Node]) -> FxHashSet<String> {
+    FxHashSet::from_iter(nodelist.iter().filter_map(|c| c.get_key()))
 }
 
 fn diff_children(a: &mut Vec<Node>, b: &[Node], i: &mut usize) -> Vec<Diff> {
@@ -259,7 +260,7 @@ impl From<bool> for AttributeValue {
     }
 }
 
-type HandlerMap<A> = HashMap<String, HandlerFunction<A>>;
+type HandlerMap<A> = FxHashMap<String, HandlerFunction<A>>;
 
 pub struct View<A> {
     node: Node,
@@ -296,7 +297,7 @@ impl<A> View<A> {
         handlers: Vec<(String, (String, HandlerFunction<A>))>,
         children: Vec<Child<A>>,
     ) -> View<A> {
-        let mut handler_map = HashMap::new();
+        let mut handler_map = FxHashMap::default();
         let handlers = handlers
             .into_iter()
             .map(|(kind, (id, f))| {
@@ -331,14 +332,14 @@ impl<A> View<A> {
     pub fn text(s: String) -> View<A> {
         View {
             node: Node::Text(s),
-            handler_map: HashMap::new(),
+            handler_map: FxHashMap::default(),
         }
     }
 
     pub fn null() -> View<A> {
         View {
             node: Node::Null,
-            handler_map: HashMap::new(),
+            handler_map: FxHashMap::default(),
         }
     }
 }
@@ -401,7 +402,7 @@ impl<A: App> Env<A> {
             app: A::default(),
             state: Rc::new(RefCell::new(state)),
             node: Rc::new(RefCell::new(Node::Null)),
-            handler_map: Rc::new(RefCell::new(HashMap::new())),
+            handler_map: Rc::new(RefCell::new(FxHashMap::default())),
             scheduled: Rc::new(Cell::new(false)),
         }
     }
