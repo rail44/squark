@@ -11,6 +11,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use squark::{
+    uuid,
     App, AttributeValue, Diff, Element as SquarkElement, Env, HandlerArg, Node as SquarkNode,
     Runtime,
 };
@@ -214,16 +215,21 @@ impl<A: App> WebRuntime<A> {
             name => self._set_handler::<web_sys::Event>(el.as_ref(), name, id),
         };
 
-        set_handler_id(el.unchecked_ref(), id);
+        let handler_id = get_handler_id(el.unchecked_ref()).unwrap_or_else(|| {
+            let uuid = uuid();
+            set_handler_id(el.unchecked_ref(), &uuid);
+            uuid
+        });
+
         let mut map = self.attached_map.borrow_mut();
-        let inner = map.entry(id.to_owned()).or_insert_with(HashMap::new);
+        let inner = map.entry(handler_id).or_insert_with(HashMap::new);
         if let Some(attached) = inner.remove(name) {
             let target: &EventTarget = el.as_ref();
             target
                 .remove_event_listener_with_callback(&name, attached.as_ref().unchecked_ref())
                 .unwrap();
         }
-        inner.insert(name.to_string(), closure);
+        inner.insert(name.to_owned(), closure);
     }
 
     fn _set_handler<T: ToHandlerArg>(
@@ -270,7 +276,7 @@ impl<A: App> Runtime<A> for WebRuntime<A> {
     }
 
     fn schedule_render(&self) {
-        let this = self.to_owned();
+        let this = self.clone();
         let closure = Closure::wrap(Box::new(move |_: JsValue| {
             this.run();
         }) as Box<FnMut(_)>);
