@@ -8,6 +8,7 @@ license = "WTFPL"
 readme = "README.md"
 categories = ["gui", "web-programming", "wasm"]
 description = "Squark runtime implemiontion for web browser with using wasm-bindgen"
+edition = "2018"
 
 [dependencies]
 serde_json = "1.0.13"
@@ -15,6 +16,8 @@ serde = "1.0.34"
 squark = { path = "../squark", version = "0.6.0" }
 wasm-bindgen = { version = "0.2.19", features = [ "nightly", "serde-serialize" ] }
 js-sys = "0.3.2"
+futures = "0.1.25"
+wasm-bindgen-futures = "0.3.6"
 
 [dependencies.web-sys]
 version = "0.3.2"

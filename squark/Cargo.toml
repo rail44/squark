@@ -9,9 +9,12 @@ readme = "README.md"
 keywords = ["web", "asmjs", "webasm", "javascript"]
 categories = ["gui", "web-programming"]
 description = "Virtual DOM implemention and application definition inspired from HyperApp"
+edition = "2018"
 
 [dependencies]
 uuid = "0.7.1"
 serde_json = "1.0.13"
 rand = { version = "0.6.0-pre.0", features = [ "wasm-bindgen" ] }
 rustc-hash = "1.0.1"
+futures = "0.1.25"
+serde = "1.0.82"

@@ -1,5 +1,5 @@
 [package]
-name = "todomvc"
+name = "with_task"
 version = "0.1.0"
 authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
 
@@ -13,7 +13,10 @@ squark = { "path" = "../../../squark" }
 squark-macros = { "path" = "../../../squark-macros" }
 squark-web = { "path" = "../../../squark-web" }
 serde_json = "1.0.13"
-wasm-bindgen = "0.2.29"
+wasm-bindgen = "0.2.19"
+futures = "0.1.25"
+js-sys = "0.3.6"
+wasm-bindgen-futures = "0.3.6"
 
 [dependencies.web-sys]
 version = "0.3.2"

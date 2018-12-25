@@ -6,7 +6,7 @@ extern crate squark_web;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use squark::{App, Runtime, View};
+use squark::{App, Runtime, View, Task};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use wasm_bindgen::prelude::*;
@@ -34,13 +34,13 @@ impl App for CounterApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(&self, mut state: State, action: Action) -> State {
+    fn reducer(&self, mut state: State, action: Action) -> (State, Vec<Task<Action>>) {
         match action {
             Action::ChangeCount(c) => {
                 state.count = c;
             }
         };
-        state
+        (state, vec![])
     }
 
     fn view(&self, state: State) -> View<Action> {

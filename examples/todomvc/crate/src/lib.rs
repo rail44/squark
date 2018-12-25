@@ -7,7 +7,7 @@ extern crate squark_web;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use squark::{uuid, App, Child, HandlerArg, Runtime, View};
+use squark::{uuid, App, Child, HandlerArg, Runtime, View, Task};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use std::iter::FromIterator;
@@ -282,7 +282,7 @@ impl App for TodoApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(&self, mut state: State, action: Action) -> State {
+    fn reducer(&self, mut state: State, action: Action) -> (State, Vec<Task<Action>>) {
         match action {
             Action::Add => {
                 if state.field.as_str() != "" {
@@ -329,7 +329,7 @@ impl App for TodoApp {
                 state.visibility = v;
             }
         };
-        state
+        (state, vec![])
     }
 
     fn view(&self, state: State) -> View<Action> {

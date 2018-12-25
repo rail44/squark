@@ -1,15 +1,8 @@
-extern crate wasm_bindgen;
-
-#[macro_use]
-extern crate serde_json;
-extern crate js_sys;
-extern crate squark;
-extern crate web_sys;
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-
+use futures::Future;
+use wasm_bindgen_futures::future_to_promise;
 use squark::{
     uuid,
     App, AttributeValue, Diff, Element as SquarkElement, Env, HandlerArg, Node as SquarkNode,
@@ -18,6 +11,8 @@ use squark::{
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{window, Document, Element, EventTarget, HtmlElement, Node};
+use serde::Serialize;
+use serde_json::json;
 
 trait ToHandlerArg: JsCast {
     fn to_handler_arg(self) -> HandlerArg;
@@ -270,6 +265,8 @@ impl<A: App> WebRuntime<A> {
     }
 }
 
+fn nop<T>(_: T) {}
+
 impl<A: App> Runtime<A> for WebRuntime<A> {
     fn get_env<'a>(&'a self) -> &'a Env<A> {
         &self.env
@@ -289,5 +286,16 @@ impl<A: App> Runtime<A> for WebRuntime<A> {
 
     fn handle_diff(&self, diff: Diff) {
         self.handle_diff_inner(&self.root, diff);
+    }
+
+    fn handle_future<T: Serialize + 'static, E: Serialize + 'static>(&self, future: Box<Future<Item = T, Error = E>>) {
+        let p = future_to_promise(
+            future
+                .map(|v| JsValue::from_serde(&v).unwrap())
+                .map_err(|e| JsValue::from_serde(&e).unwrap())
+        );
+        let closure = Closure::new(nop);
+        p.then(&closure);
+        closure.forget();
     }
 }
