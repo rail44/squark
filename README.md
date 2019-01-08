@@ -1,32 +1,41 @@
 # squark
 
-[![crates.io](https://img.shields.io/crates/v/squark.svg)](https://crates.io/crates/squark)
-[![docs.rs](https://docs.rs/squark/badge.svg)](https://docs.rs/squark/*/squark/)
-
-Virtual DOM implemention and definitions of Application and Runtime.
-
-## Fertures
-
-This repository includes
-
-* Pure Rust virtual DOM implemention
-* Definition of application inspired from [HyperApp](https://github.com/hyperapp/hyperapp/)
-* Definition of runtime to handle diffirence of virtual DOM
-* Runtime implementions for several platforms
-  * For web browser by using [wasm-bindgen](https://github.com/rustwasm/wasm-bindgen)
-  + Server side rendering within Rustic world *(now working)*
-* Macros like a JSX to help writing view
+Rust frontend framework, for web browser and more.
 
 **Currently, we depend on `nightly` channel**
 
-## squark-macros
+## Design
+
+* Separating runtime definition and implemention
+  + `squark` crate has no dependency for specific platform
+* Architecture inspired from [Elm](https://elm-lang.org/) and [HyperApp](https://github.com/hyperapp/hyperapp/)
+  + Simplicy
+  + Elegant
+* Supporting futures-0.1
+  + reducer can emit task for async work such as fetch resource
+
+## crates
+
+### squark
+
+[![crates.io](https://img.shields.io/crates/v/squark.svg)](https://crates.io/crates/squark)
+[![docs.rs](https://docs.rs/squark/badge.svg)](https://docs.rs/squark/*/squark/)
+
+Core crate.
+
+* Pure Rust virtual DOM implemention
+* Definition of GUI application
+* Definition of runtime to handle diffirence of virtual DOM
+
+### squark-macros
 
 [![crates.io](https://img.shields.io/crates/v/squark-macros.svg)](https://crates.io/crates/squark-macros)
 [![docs.rs](https://docs.rs/squark-macros/badge.svg)](https://docs.rs/squark-macros/*/squark_macros/)
 
-Crate that providing JSX like macro by `proc_marco` and [pest](https://github.com/pest-parser/pest) parser.  
+It provides macro like JSX for helping writing view.  
+Very thanks to [pest](https://github.com/pest-parser/pest) parser.
 
-### Syntax
+#### Syntax
 
 ```   
 view! {
@@ -38,7 +47,8 @@ view! {
 
 We can generate native Rust expression at compile-time.
 
-## squark-web
+
+### squark-web
 
 [![crates.io](https://img.shields.io/crates/v/squark-web.svg)](https://crates.io/crates/squark-web)
 [![docs.rs](https://docs.rs/squark-web/badge.svg)](https://docs.rs/squark-web/*/squark_web/)
@@ -56,7 +66,7 @@ extern crate squark_web;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-use squark::{App, Runtime, View};
+use squark::{App, Runtime, View, Task};
 use squark_macros::view;
 use squark_web::WebRuntime;
 use wasm_bindgen::prelude::*;
@@ -84,13 +94,13 @@ impl App for CounterApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(&self, mut state: State, action: Action) -> State {
+    fn reducer(&self, mut state: State, action: Action) -> (State, Task<Action>) {
         match action {
             Action::ChangeCount(c) => {
                 state.count = c;
             }
         };
-        state
+        (state, Task::empty())
     }
 
     fn view(&self, state: State) -> View<Action> {
@@ -133,4 +143,5 @@ pub fn run() {
 
 Project dir is located at [examples/counter](./examples/counter).
 
-There is also available TodoMVC example at [examples/todomvc](./examples/todomvc) and working on [https://rail44.github.io/squark/](https://rail44.github.io/squark/).
+There are some other examples available on [examples](./examples), most of them use [rust-webpack-template](https://github.com/rustwasm/rust-webpack-template).  
+TodoMVC is working on [https://rail44.github.io/squark/](https://rail44.github.io/squark/).
