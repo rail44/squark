@@ -42,8 +42,8 @@ impl App for CounterApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(&self, mut state: State, action: Action) -> (State, Vec<Task<Action>>) {
-        let mut tasks: Vec<Task<Action>> = vec![];
+    fn reducer(&self, mut state: State, action: Action) -> (State, Task<Action>) {
+        let mut task = Task::empty();
         match action {
             Action::Increment => {
                 state.count += 1;
@@ -59,15 +59,15 @@ impl App for CounterApp {
                     window().unwrap().set_timeout_with_callback_and_timeout_and_arguments_0(closure.as_ref().unchecked_ref(), 1000).unwrap();
                     closure.forget();
                 });
-                let task = JsFuture::from(p)
+                let future = JsFuture::from(p)
                     .map(move |_| {
                         Action::Increment
                     })
                     .map_err(|e| panic!("delay errored; err={:?}", e));
-                tasks.push(Box::new(task));
+                task.push(Box::new(future));
             }
         };
-        (state, tasks)
+        (state, task)
     }
 
     fn view(&self, state: State) -> View<Action> {

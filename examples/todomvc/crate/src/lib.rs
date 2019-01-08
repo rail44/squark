@@ -282,7 +282,7 @@ impl App for TodoApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(&self, mut state: State, action: Action) -> (State, Vec<Task<Action>>) {
+    fn reducer(&self, mut state: State, action: Action) -> (State, Task<Action>) {
         match action {
             Action::Add => {
                 if state.field.as_str() != "" {
@@ -329,7 +329,7 @@ impl App for TodoApp {
                 state.visibility = v;
             }
         };
-        (state, vec![])
+        (state, Task::empty())
     }
 
     fn view(&self, state: State) -> View<Action> {

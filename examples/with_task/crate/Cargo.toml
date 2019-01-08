@@ -3,10 +3,10 @@ name = "with_task"
 version = "0.1.0"
 authors = ["Satoshi Amemiya <amemiya@protonmail.com>"]
 
+[workspace]
+
 [lib]
 crate-type = ["cdylib"]
-
-[workspace]
 
 [dependencies]
 squark = { "path" = "../../../squark" }

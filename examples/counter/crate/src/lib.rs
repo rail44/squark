@@ -34,13 +34,13 @@ impl App for CounterApp {
     type State = State;
     type Action = Action;
 
-    fn reducer(&self, mut state: State, action: Action) -> (State, Vec<Task<Action>>) {
+    fn reducer(&self, mut state: State, action: Action) -> (State, Task<Action>) {
         match action {
             Action::ChangeCount(c) => {
                 state.count = c;
             }
         };
-        (state, vec![])
+        (state, Task::empty())
     }
 
     fn view(&self, state: State) -> View<Action> {

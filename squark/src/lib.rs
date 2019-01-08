@@ -20,7 +20,7 @@ pub trait App: 'static + Clone + Default {
     type State: Clone + Debug + PartialEq + 'static;
     type Action: Clone + Debug + 'static;
 
-    fn reducer(&self, state: Self::State, action: Self::Action) -> (Self::State, Vec<Task<Self::Action>>);
+    fn reducer(&self, state: Self::State, action: Self::Action) -> (Self::State, Task<Self::Action>);
 
     fn view(&self, state: Self::State) -> View<Self::Action>;
 }
@@ -73,7 +73,27 @@ impl<A: App> Env<A> {
     }
 }
 
-pub type Task<A> = Box<Future<Item = A, Error = ()>>;
+pub struct Task<A>(Vec<Box<Future<Item = A, Error = ()>>>);
+
+impl<A> Default for Task<A> {
+    fn default() -> Self {
+        Task(vec![])
+    }
+}
+
+impl<A> Task<A> {
+    pub fn empty() -> Self {
+        Self::default()
+    }
+
+    pub fn into_futures(self) -> Vec<Box<Future<Item = A, Error = ()>>> {
+        self.0
+    }
+
+    pub fn push(&mut self, future: Box<Future<Item = A, Error = ()>>) {
+        self.0.push(future);
+    }
+}
 
 pub trait Runtime<A: App>: Clone + 'static {
     fn get_env<'a>(&'a self) -> &'a Env<A>;
@@ -100,9 +120,9 @@ pub trait Runtime<A: App>: Clone + 'static {
         let env = self.get_env();
 
         let old_state = env.get_state();
-        let (new_state, tasks) = env.app.reducer(old_state.to_owned(), action);
-        for task in tasks {
-            self.emit_task(task);
+        let (new_state, task) = env.app.reducer(old_state.to_owned(), action);
+        for future in task.into_futures() {
+            self.emit_future(future);
         }
         self.set_state(new_state);
     }
@@ -121,7 +141,7 @@ pub trait Runtime<A: App>: Clone + 'static {
         self.schedule_render();
     }
 
-    fn emit_task(&self, task: Box<Future<Item = A::Action, Error = ()>>) {
+    fn emit_future(&self, task: Box<Future<Item = A::Action, Error = ()>>) {
         let this = self.clone();
         self.handle_future(Box::new(task.map(move |a| {
             this.on_action(a);
