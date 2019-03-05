@@ -3,7 +3,6 @@ use std::cell::{Cell, RefCell};
 use std::fmt::Debug;
 use rustc_hash::FxHashMap;
 use std::rc::Rc;
-use uuid::Uuid;
 use futures::Future;
 use serde::Serialize;
 
@@ -105,6 +104,14 @@ pub trait Runtime<A: App>: Clone + 'static {
     fn schedule_render(&self);
 
     fn run(&self) {
+        self.run_with_task(Task::empty());
+    }
+
+    fn run_with_task(&self, task: Task<A::Action>) {
+        for future in task.into_futures() {
+            self.emit_future(future);
+        }
+
         let env = self.get_env();
         env.scheduled.set(false);
         let mut old_node = env.get_node();
@@ -163,6 +170,9 @@ pub trait Runtime<A: App>: Clone + 'static {
 }
 
 pub fn uuid() -> String {
-    RNG.with(|rng| Uuid::from_random_bytes(rng.borrow_mut().gen()))
+    RNG.with(|rng| uuid::Builder::from_bytes(rng.borrow_mut().gen()))
+        .set_variant(uuid::Variant::RFC4122)
+        .set_version(uuid::Version::Random)
+        .build()
         .to_string()
 }
