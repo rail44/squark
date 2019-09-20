@@ -14,7 +14,7 @@ description = "Macros like JSX to help building Squark application"
 proc-macro = true
 
 [dependencies]
-pest = "2.0.0"
+pest = "2.1.2"
 pest_derive = "2.0.0"
 
 [dev-dependencies]
