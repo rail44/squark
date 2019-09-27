@@ -12,7 +12,7 @@ edition = "2018"
 
 [dependencies]
 serde_json = "1.0.13"
-serde = "1.0.34"
+serde = "1.0.101"
 squark = { path = "../squark", version = "0.7.0" }
 wasm-bindgen = { version = "0.2.19", features = [ "nightly", "serde-serialize" ] }
 js-sys = "0.3.27"
